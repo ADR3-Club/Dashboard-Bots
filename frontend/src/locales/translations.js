@@ -86,6 +86,19 @@ export const translations = {
     // Session
     'session.expired': 'Votre session a expiré. Veuillez vous reconnecter.',
     'session.timeout': 'Session expirée',
+
+    // Stats
+    'stats.totalProcesses': 'Total Processus',
+    'stats.online': 'En ligne',
+    'stats.offline': 'Hors ligne',
+    'stats.avgCPU': 'CPU Moyen',
+    'stats.totalRAM': 'RAM Totale',
+
+    // Search and Filter
+    'search.placeholder': 'Rechercher par nom...',
+    'filter.title': 'Filtres',
+    'filter.status': 'Statut',
+    'filter.all': 'Tous',
   },
   en: {
     // Header
@@ -174,5 +187,18 @@ export const translations = {
     // Session
     'session.expired': 'Your session has expired. Please login again.',
     'session.timeout': 'Session Expired',
+
+    // Stats
+    'stats.totalProcesses': 'Total Processes',
+    'stats.online': 'Online',
+    'stats.offline': 'Offline',
+    'stats.avgCPU': 'Avg CPU',
+    'stats.totalRAM': 'Total RAM',
+
+    // Search and Filter
+    'search.placeholder': 'Search by name...',
+    'filter.title': 'Filters',
+    'filter.status': 'Status',
+    'filter.all': 'All',
   }
 };

@@ -1,12 +1,36 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Layout from '../components/layout/Layout';
 import ProcessTable from '../components/dashboard/ProcessTable';
+import StatsCards from '../components/dashboard/StatsCards';
+import SearchAndFilter from '../components/dashboard/SearchAndFilter';
 import LogViewer from '../components/logs/LogViewer';
+import { useProcesses } from '../hooks/useProcesses';
 import useLocaleStore from '../stores/localeStore';
 
 export default function Dashboard() {
   const [selectedProcess, setSelectedProcess] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const { data: processes, isLoading } = useProcesses();
   const { t } = useLocaleStore();
+
+  // Filter and search processes
+  const filteredProcesses = useMemo(() => {
+    if (!processes) return [];
+
+    return processes.filter((process) => {
+      // Search by name
+      const matchesSearch = process.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+      // Filter by status
+      const status = process.pm2_env.status;
+      const matchesFilter =
+        statusFilter === 'all' ||
+        status === statusFilter;
+
+      return matchesSearch && matchesFilter;
+    });
+  }, [processes, searchTerm, statusFilter]);
 
   const handleViewLogs = (process) => {
     setSelectedProcess(process);
@@ -14,6 +38,14 @@ export default function Dashboard() {
 
   const handleCloseLogs = () => {
     setSelectedProcess(null);
+  };
+
+  const handleSearchChange = (term) => {
+    setSearchTerm(term);
+  };
+
+  const handleFilterChange = (filter) => {
+    setStatusFilter(filter);
   };
 
   return (
@@ -29,8 +61,20 @@ export default function Dashboard() {
           </p>
         </div>
 
+        {/* Statistics Cards */}
+        {!isLoading && processes && <StatsCards processes={filteredProcesses} />}
+
+        {/* Search and Filter */}
+        {!isLoading && processes && (
+          <SearchAndFilter
+            onSearchChange={handleSearchChange}
+            onFilterChange={handleFilterChange}
+            statusFilter={statusFilter}
+          />
+        )}
+
         {/* Process table */}
-        <ProcessTable onViewLogs={handleViewLogs} />
+        <ProcessTable processes={filteredProcesses} isLoading={isLoading} onViewLogs={handleViewLogs} />
       </div>
 
       {/* Log viewer modal */}

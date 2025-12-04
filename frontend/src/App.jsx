@@ -7,6 +7,7 @@ import useAuthStore from './stores/authStore';
 import useThemeStore from './stores/themeStore';
 import useSessionTimeout from './hooks/useSessionTimeout';
 import useServerRestart from './hooks/useServerRestart';
+import ToastContainer from './components/common/Toast';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -56,6 +57,7 @@ function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
+      <ToastContainer />
     </QueryClientProvider>
   );
 }

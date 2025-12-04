@@ -1,12 +1,14 @@
 import { useEffect, useRef, useCallback } from 'react';
 import useAuthStore from '../stores/authStore';
 import useLocaleStore from '../stores/localeStore';
+import useToastStore from '../stores/toastStore';
 
 const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
 
 export function useSessionTimeout() {
   const { logout, isAuthenticated } = useAuthStore();
   const { t } = useLocaleStore();
+  const { addToast } = useToastStore();
   const timeoutRef = useRef(null);
   const lastActivityRef = useRef(Date.now());
 
@@ -20,10 +22,15 @@ export function useSessionTimeout() {
     if (isAuthenticated) {
       timeoutRef.current = setTimeout(() => {
         logout();
-        alert(t('session.expired'));
+        addToast({
+          type: 'warning',
+          title: t('session.expired'),
+          message: t('login.signIn'),
+          duration: 7000
+        });
       }, SESSION_TIMEOUT);
     }
-  }, [isAuthenticated, logout, t]);
+  }, [isAuthenticated, logout, t, addToast]);
 
   useEffect(() => {
     if (!isAuthenticated) return;

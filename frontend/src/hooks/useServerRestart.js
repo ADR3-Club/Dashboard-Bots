@@ -2,12 +2,14 @@ import { useEffect, useRef } from 'react';
 import axios from 'axios';
 import useAuthStore from '../stores/authStore';
 import useLocaleStore from '../stores/localeStore';
+import useToastStore from '../stores/toastStore';
 
 const CHECK_INTERVAL = 30000; // Check every 30 seconds
 
 export function useServerRestart() {
   const { logout, isAuthenticated } = useAuthStore();
   const { t } = useLocaleStore();
+  const { addToast } = useToastStore();
   const serverIdRef = useRef(null);
   const intervalRef = useRef(null);
 
@@ -32,7 +34,12 @@ export function useServerRestart() {
           // Server ID changed - server was restarted
           clearInterval(intervalRef.current);
           logout();
-          alert(t('session.expired'));
+          addToast({
+            type: 'warning',
+            title: t('session.expired'),
+            message: t('login.signIn'),
+            duration: 7000
+          });
         }
       } catch (error) {
         // If we get an error (like 401), the session is already invalid

@@ -3,9 +3,12 @@ import { useProcesses } from '../../hooks/useProcesses';
 import ProcessRow from './ProcessRow';
 import useLocaleStore from '../../stores/localeStore';
 
-export default function ProcessTable({ onViewLogs }) {
-  const { data: processes, isLoading, error, refetch } = useProcesses();
+export default function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, onViewLogs }) {
+  const { error, refetch } = useProcesses();
   const { t } = useLocaleStore();
+
+  const processes = filteredProcesses;
+  const isLoading = isLoadingProp;
 
   if (isLoading) {
     return (
