@@ -7,17 +7,22 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
  */
 function authMiddleware(req, res, next) {
   try {
-    // Get token from Authorization header
-    const authHeader = req.headers.authorization;
+    // Get token from Authorization header or query parameter (for SSE)
+    let token = null;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    } else if (req.query.token) {
+      token = req.query.token; // For SSE connections
+    }
+
+    if (!token) {
       return res.status(401).json({
         success: false,
         error: 'No token provided'
       });
     }
-
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
     // Verify token
     const decoded = jwt.verify(token, JWT_SECRET);

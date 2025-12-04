@@ -1,10 +1,13 @@
-import { Moon, Sun, LogOut, Activity } from 'lucide-react';
+import { useState } from 'react';
+import { Moon, Sun, LogOut, Activity, Key } from 'lucide-react';
 import useThemeStore from '../../stores/themeStore';
 import useAuthStore from '../../stores/authStore';
+import ChangePasswordModal from '../auth/ChangePasswordModal';
 
 export default function Header() {
   const { theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const handleLogout = () => {
     if (confirm('Are you sure you want to logout?')) {
@@ -56,6 +59,16 @@ export default function Header() {
               )}
             </button>
 
+            {/* Change password button */}
+            <button
+              onClick={() => setShowChangePassword(true)}
+              className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors"
+              aria-label="Change password"
+              title="Change password"
+            >
+              <Key className="w-5 h-5" />
+            </button>
+
             {/* Logout button */}
             <button
               onClick={handleLogout}
@@ -67,6 +80,11 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+      {/* Change password modal */}
+      {showChangePassword && (
+        <ChangePasswordModal onClose={() => setShowChangePassword(false)} />
+      )}
     </header>
   );
 }
