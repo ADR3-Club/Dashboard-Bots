@@ -65,8 +65,8 @@ export default function Dashboard() {
             bVal = b.pm2_env?.restart_time || b.restarts || 0;
             break;
           case 'id':
-            aVal = a.pm_id || a.id;
-            bVal = b.pm_id || b.id;
+            aVal = Number(a.pm_id || a.id);
+            bVal = Number(b.pm_id || b.id);
             break;
           default:
             return 0;
