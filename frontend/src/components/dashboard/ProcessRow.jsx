@@ -76,7 +76,7 @@ export default function ProcessRow({ process, onViewLogs }) {
           <button
             onClick={handleRestart}
             disabled={isActionLoading}
-            className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-colors disabled:opacity-50"
+            className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors disabled:opacity-50 border border-transparent hover:border-primary-200 dark:hover:border-primary-800"
             title="Restart"
           >
             <RefreshCw className={`w-4 h-4 ${isActionLoading ? 'animate-spin' : ''}`} />
@@ -86,7 +86,7 @@ export default function ProcessRow({ process, onViewLogs }) {
             <button
               onClick={handleStop}
               disabled={isActionLoading}
-              className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors disabled:opacity-50"
+              className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors disabled:opacity-50 border border-transparent hover:border-red-200 dark:hover:border-red-800"
               title="Stop"
             >
               <Square className="w-4 h-4" />
@@ -95,7 +95,7 @@ export default function ProcessRow({ process, onViewLogs }) {
             <button
               onClick={handleStart}
               disabled={isActionLoading}
-              className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400 transition-colors disabled:opacity-50"
+              className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400 transition-colors disabled:opacity-50 border border-transparent hover:border-green-200 dark:hover:border-green-800"
               title="Start"
             >
               <Play className="w-4 h-4" />
@@ -104,7 +104,7 @@ export default function ProcessRow({ process, onViewLogs }) {
 
           <button
             onClick={() => onViewLogs(process)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+            className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors border border-transparent hover:border-primary-200 dark:hover:border-primary-800"
             title="View logs"
           >
             <FileText className="w-4 h-4" />

@@ -48,7 +48,7 @@ export default function ProcessTable({ onViewLogs }) {
         </h2>
         <button
           onClick={() => refetch()}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+          className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors border border-transparent hover:border-primary-200 dark:hover:border-primary-800"
           title="Refresh"
         >
           <RefreshCw className="w-5 h-5" />

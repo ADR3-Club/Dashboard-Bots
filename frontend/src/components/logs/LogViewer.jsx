@@ -62,21 +62,21 @@ export default function LogViewer({ process, onClose }) {
           <div className="flex items-center gap-2">
             <button
               onClick={clearLogs}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+              className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors border border-transparent hover:border-red-200 dark:hover:border-red-800"
               title="Clear logs"
             >
               <Trash2 className="w-5 h-5" />
             </button>
             <button
               onClick={handleExport}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+              className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors border border-transparent hover:border-primary-200 dark:hover:border-primary-800"
               title="Export logs"
             >
               <Download className="w-5 h-5" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors border border-transparent hover:border-gray-300 dark:hover:border-gray-600"
               title="Close"
             >
               <X className="w-5 h-5" />
