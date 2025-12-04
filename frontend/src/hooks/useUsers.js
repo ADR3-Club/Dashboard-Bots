@@ -9,7 +9,7 @@ export function useUsers() {
     queryKey: ['users'],
     queryFn: async () => {
       const response = await usersAPI.getAll();
-      return response.data.users;
+      return response.data;
     },
   });
 }
