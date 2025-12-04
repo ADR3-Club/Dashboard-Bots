@@ -46,11 +46,8 @@ export default function Login() {
             <Activity className="w-16 h-16 text-primary-600 dark:text-primary-400" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            PM2 Dashboard
+            ADR3Club Bot Dashboard
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Bot Management System
-          </p>
         </div>
 
         {/* Login Form */}
@@ -114,20 +111,11 @@ export default function Login() {
               {isSubmitting ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-
-          {/* Default credentials hint */}
-          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <p className="text-xs text-blue-800 dark:text-blue-400">
-              <strong>Default credentials:</strong><br />
-              Username: <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">admin</code><br />
-              Password: <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">admin123</code>
-            </p>
-          </div>
         </div>
 
         {/* Footer */}
         <p className="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
-          Powered by PM2 & React
+          Powered by ADR3Club
         </p>
       </div>
     </div>

@@ -24,11 +24,8 @@ export default function Header() {
             <Activity className="w-8 h-8 text-primary-600 dark:text-primary-400" />
             <div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                PM2 Dashboard
+                ADR3Club Bot Dashboard
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Bot Management System
-              </p>
             </div>
           </div>
 
