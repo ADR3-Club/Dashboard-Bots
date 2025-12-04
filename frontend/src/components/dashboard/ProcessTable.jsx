@@ -1,14 +1,35 @@
-import { RefreshCw, AlertCircle } from 'lucide-react';
+import { RefreshCw, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { useProcesses } from '../../hooks/useProcesses';
 import ProcessRow from './ProcessRow';
 import useLocaleStore from '../../stores/localeStore';
 
-export default function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, onViewLogs }) {
+export default function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, onViewLogs, sortConfig, onSort }) {
   const { error, refetch } = useProcesses();
   const { t } = useLocaleStore();
 
   const processes = filteredProcesses;
   const isLoading = isLoadingProp;
+
+  const SortIcon = ({ column }) => {
+    if (sortConfig?.key !== column) {
+      return <ArrowUpDown className="w-4 h-4 opacity-0 group-hover:opacity-50 transition-opacity" />;
+    }
+    return sortConfig.direction === 'asc'
+      ? <ArrowUp className="w-4 h-4" />
+      : <ArrowDown className="w-4 h-4" />;
+  };
+
+  const SortableHeader = ({ column, children }) => (
+    <th
+      className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors group"
+      onClick={() => onSort(column)}
+    >
+      <div className="flex items-center gap-2">
+        {children}
+        <SortIcon column={column} />
+      </div>
+    </th>
+  );
 
   if (isLoading) {
     return (
@@ -65,27 +86,15 @@ export default function ProcessTable({ processes: filteredProcesses, isLoading: 
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-800/50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {t('table.id')}
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {t('table.name')}
-              </th>
+              <SortableHeader column="id">{t('table.id')}</SortableHeader>
+              <SortableHeader column="name">{t('table.name')}</SortableHeader>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 {t('table.status')}
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {t('table.uptime')}
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {t('table.cpu')}
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {t('table.memory')}
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {t('table.restarts')}
-              </th>
+              <SortableHeader column="uptime">{t('table.uptime')}</SortableHeader>
+              <SortableHeader column="cpu">{t('table.cpu')}</SortableHeader>
+              <SortableHeader column="memory">{t('table.memory')}</SortableHeader>
+              <SortableHeader column="restarts">{t('table.restarts')}</SortableHeader>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 {t('table.actions')}
               </th>

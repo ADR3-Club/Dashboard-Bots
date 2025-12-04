@@ -34,6 +34,7 @@ export const translations = {
     // Process Status
     'status.online': 'En ligne',
     'status.stopped': 'Arrêté',
+    'status.stopping': 'Arrêt en cours',
     'status.errored': 'Erreur',
     'status.launching': 'Démarrage',
 
@@ -135,6 +136,7 @@ export const translations = {
     // Process Status
     'status.online': 'Online',
     'status.stopped': 'Stopped',
+    'status.stopping': 'Stopping',
     'status.errored': 'Errored',
     'status.launching': 'Launching',
 

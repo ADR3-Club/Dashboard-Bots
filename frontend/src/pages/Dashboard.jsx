@@ -11,14 +11,15 @@ export default function Dashboard() {
   const [selectedProcess, setSelectedProcess] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const { data: processes, isLoading } = useProcesses();
   const { t } = useLocaleStore();
 
-  // Filter and search processes
+  // Filter, search, and sort processes
   const filteredProcesses = useMemo(() => {
     if (!processes) return [];
 
-    return processes.filter((process) => {
+    let result = processes.filter((process) => {
       // Search by name
       const matchesSearch = process.name.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -30,7 +31,49 @@ export default function Dashboard() {
 
       return matchesSearch && matchesFilter;
     });
-  }, [processes, searchTerm, statusFilter]);
+
+    // Sort
+    if (sortConfig.key) {
+      result.sort((a, b) => {
+        let aVal, bVal;
+
+        switch (sortConfig.key) {
+          case 'name':
+            aVal = a.name.toLowerCase();
+            bVal = b.name.toLowerCase();
+            break;
+          case 'cpu':
+            aVal = a.monit?.cpu || 0;
+            bVal = b.monit?.cpu || 0;
+            break;
+          case 'memory':
+            aVal = a.monit?.memory || 0;
+            bVal = b.monit?.memory || 0;
+            break;
+          case 'uptime':
+            aVal = a.pm2_env?.pm_uptime || 0;
+            bVal = b.pm2_env?.pm_uptime || 0;
+            break;
+          case 'restarts':
+            aVal = a.pm2_env?.restart_time || 0;
+            bVal = b.pm2_env?.restart_time || 0;
+            break;
+          case 'id':
+            aVal = a.pm_id;
+            bVal = b.pm_id;
+            break;
+          default:
+            return 0;
+        }
+
+        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [processes, searchTerm, statusFilter, sortConfig]);
 
   const handleViewLogs = (process) => {
     setSelectedProcess(process);
@@ -46,6 +89,13 @@ export default function Dashboard() {
 
   const handleFilterChange = (filter) => {
     setStatusFilter(filter);
+  };
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
+    }));
   };
 
   return (
@@ -74,7 +124,13 @@ export default function Dashboard() {
         )}
 
         {/* Process table */}
-        <ProcessTable processes={filteredProcesses} isLoading={isLoading} onViewLogs={handleViewLogs} />
+        <ProcessTable
+          processes={filteredProcesses}
+          isLoading={isLoading}
+          onViewLogs={handleViewLogs}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+        />
       </div>
 
       {/* Log viewer modal */}
