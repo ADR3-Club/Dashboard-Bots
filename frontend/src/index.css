@@ -109,3 +109,19 @@
 .animate-pulse-badge {
   animation: pulse-badge 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Slide up animation for bulk action bar */
+@keyframes slide-up {
+  from {
+    transform: translate(-50%, 100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}

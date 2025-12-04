@@ -6,7 +6,7 @@ import { useState } from 'react';
 import ConfirmDialog from '../common/ConfirmDialog';
 import useLocaleStore from '../../stores/localeStore';
 
-export default function ProcessRow({ process, onViewLogs }) {
+export default function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
   const { t } = useLocaleStore();
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: null });
@@ -14,6 +14,9 @@ export default function ProcessRow({ process, onViewLogs }) {
   const restartMutation = useRestartProcess();
   const stopMutation = useStopProcess();
   const startMutation = useStartProcess();
+
+  const isSelected = selectedIds.includes(process.pm_id);
+  const showCheckbox = onToggleSelect !== undefined;
 
   const handleRestart = async () => {
     setIsActionLoading(true);
@@ -62,6 +65,16 @@ export default function ProcessRow({ process, onViewLogs }) {
 
   return (
     <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+      {showCheckbox && (
+        <td className="px-4 py-3">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onToggleSelect(process.pm_id)}
+            className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:bg-gray-700 dark:border-gray-600 cursor-pointer"
+          />
+        </td>
+      )}
       <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
         {process.pm_id}
       </td>
