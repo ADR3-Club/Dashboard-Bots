@@ -4,12 +4,15 @@ import ProcessRow from './ProcessRow';
 import ProcessCard from './ProcessCard';
 import useLocaleStore from '../../stores/localeStore';
 
-export default function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, onViewLogs, sortConfig, onSort }) {
+export default function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, onViewLogs, sortConfig, onSort, selectedIds = [], onToggleSelect, onToggleAll }) {
   const { error, refetch } = useProcesses();
   const { t } = useLocaleStore();
 
   const processes = filteredProcesses;
   const isLoading = isLoadingProp;
+
+  const showCheckbox = onToggleSelect !== undefined;
+  const allSelected = processes.length > 0 && processes.every(p => selectedIds.includes(p.pm_id));
 
   const SortIcon = ({ column }) => {
     if (sortConfig?.key !== column) {
@@ -89,6 +92,16 @@ export default function ProcessTable({ processes: filteredProcesses, isLoading: 
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-800/50">
               <tr>
+                {showCheckbox && (
+                  <th className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      onChange={onToggleAll}
+                      className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 cursor-pointer"
+                    />
+                  </th>
+                )}
                 <SortableHeader column="id">{t('table.id')}</SortableHeader>
                 <SortableHeader column="name">{t('table.name')}</SortableHeader>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -109,6 +122,8 @@ export default function ProcessTable({ processes: filteredProcesses, isLoading: 
                   key={process.pm_id}
                   process={process}
                   onViewLogs={onViewLogs}
+                  selectedIds={selectedIds}
+                  onToggleSelect={onToggleSelect}
                 />
               ))}
             </tbody>

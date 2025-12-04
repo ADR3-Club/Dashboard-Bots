@@ -3,17 +3,23 @@ import Layout from '../components/layout/Layout';
 import ProcessTable from '../components/dashboard/ProcessTable';
 import StatsCards from '../components/dashboard/StatsCards';
 import SearchAndFilter from '../components/dashboard/SearchAndFilter';
+import BulkActionBar from '../components/dashboard/BulkActionBar';
 import LogViewer from '../components/logs/LogViewer';
-import { useProcesses } from '../hooks/useProcesses';
+import { useProcesses, useRestartProcess, useStopProcess } from '../hooks/useProcesses';
 import useLocaleStore from '../stores/localeStore';
+import useToast from '../hooks/useToast';
 
 export default function Dashboard() {
   const [selectedProcess, setSelectedProcess] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [selectedIds, setSelectedIds] = useState([]);
   const { data: processes, isLoading } = useProcesses();
   const { t } = useLocaleStore();
+  const toast = useToast();
+  const restartMutation = useRestartProcess();
+  const stopMutation = useStopProcess();
 
   // Filter, search, and sort processes
   const filteredProcesses = useMemo(() => {
@@ -98,6 +104,40 @@ export default function Dashboard() {
     }));
   };
 
+  const handleToggleSelect = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleToggleAll = () => {
+    if (selectedIds.length === filteredProcesses.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredProcesses.map((p) => p.pm_id));
+    }
+  };
+
+  const handleBulkRestart = async () => {
+    try {
+      await Promise.all(selectedIds.map((id) => restartMutation.mutateAsync(id)));
+      toast.success(`${selectedIds.length} ${t('bulk.processes')} ${t('bulk.restart').toLowerCase()}ed`);
+      setSelectedIds([]);
+    } catch (error) {
+      toast.error(t('dashboard.error'));
+    }
+  };
+
+  const handleBulkStop = async () => {
+    try {
+      await Promise.all(selectedIds.map((id) => stopMutation.mutateAsync(id)));
+      toast.success(`${selectedIds.length} ${t('bulk.processes')} ${t('bulk.stop').toLowerCase()}ped`);
+      setSelectedIds([]);
+    } catch (error) {
+      toast.error(t('dashboard.error'));
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
@@ -130,8 +170,19 @@ export default function Dashboard() {
           onViewLogs={handleViewLogs}
           sortConfig={sortConfig}
           onSort={handleSort}
+          selectedIds={selectedIds}
+          onToggleSelect={handleToggleSelect}
+          onToggleAll={handleToggleAll}
         />
       </div>
+
+      {/* Bulk Action Bar */}
+      <BulkActionBar
+        selectedIds={selectedIds}
+        onClearSelection={() => setSelectedIds([])}
+        onBulkRestart={handleBulkRestart}
+        onBulkStop={handleBulkStop}
+      />
 
       {/* Log viewer modal */}
       {selectedProcess && (
