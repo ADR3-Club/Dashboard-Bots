@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const cron = require('node-cron');
@@ -10,6 +11,7 @@ const cron = require('node-cron');
 const database = require('./config/database');
 const pm2Service = require('./services/pm2Service');
 const metricsService = require('./services/metricsService');
+const redisService = require('./services/redisService');
 const historyService = require('./services/historyService');
 const alertService = require('./services/alertService');
 const notificationService = require('./services/notificationService');
@@ -42,11 +44,24 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// Compression middleware (Gzip)
+app.use(compression({
+  level: 6, // Compression level (1-9, 6 is default balance between speed and ratio)
+  threshold: 1024, // Only compress responses larger than 1KB
+  filter: (req, res) => {
+    // Don't compress SSE streams
+    if (req.path === '/api/metrics/stream') {
+      return false;
+    }
+    return compression.filter(req, res);
+  }
+}));
+
 // Body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting for auth endpoints
+// Rate limiting for auth endpoints (strict - prevent brute force)
 const authLimiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW || 15) * 60 * 1000,
   max: parseInt(process.env.RATE_LIMIT_MAX || 5),
@@ -58,8 +73,25 @@ const authLimiter = rateLimit({
   legacyHeaders: false
 });
 
-// Apply rate limiting to auth routes
+// General API rate limiting (prevent abuse)
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: parseInt(process.env.API_RATE_LIMIT || 100), // 100 requests per minute by default
+  message: {
+    success: false,
+    error: 'Too many requests, please slow down'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limiting for SSE streams
+    return req.path === '/api/metrics/stream' || req.path === '/api/logs/stream';
+  }
+});
+
+// Apply rate limiting
 app.use('/api/auth/login', authLimiter);
+app.use('/api', apiLimiter);
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -78,7 +110,8 @@ app.get('/api/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     pm2Connected: pm2Service.isConnected(),
-    metricsCollecting: metricsService.isCollecting
+    metricsCollecting: metricsService.isCollecting,
+    redisConnected: redisService.isAvailable()
   });
 });
 
@@ -128,6 +161,9 @@ async function gracefulShutdown(signal) {
 
     // Disconnect from PM2
     pm2Service.disconnect();
+
+    // Disconnect from Redis
+    await redisService.disconnect();
 
     // Close database connection
     await database.close();
@@ -221,24 +257,28 @@ async function startServer() {
     console.log(`Port: ${PORT}`);
 
     // Connect to database
-    console.log('\n[1/4] Connecting to database...');
+    console.log('\n[1/5] Connecting to database...');
     await database.connect();
     await database.initialize();
 
     // Connect to PM2
-    console.log('[2/4] Connecting to PM2...');
+    console.log('[2/5] Connecting to PM2...');
     await pm2Service.connect();
 
+    // Connect to Redis (optional)
+    console.log('[3/5] Connecting to Redis...');
+    await redisService.connect();
+
     // Setup PM2 event listeners
-    console.log('[3/4] Setting up PM2 event listeners...');
+    console.log('[4/5] Setting up PM2 event listeners...');
     setupPM2EventListeners();
 
     // Start metrics collection
-    console.log('[4/4] Starting metrics collection...');
+    console.log('[5/5] Starting metrics collection...');
     metricsService.startCollection();
 
     // Setup history cleanup cron job (runs daily at 2 AM)
-    console.log('[5/5] Setting up history cleanup cron job...');
+    console.log('[6/6] Setting up history cleanup cron job...');
     cron.schedule('0 2 * * *', async () => {
       try {
         console.log('Running scheduled history cleanup...');

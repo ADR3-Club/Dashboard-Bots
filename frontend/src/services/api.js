@@ -101,8 +101,8 @@ export const logsAPI = {
 
 // Metrics API
 export const metricsAPI = {
-  getHistory: (id) =>
-    api.get(`/metrics/${id}`),
+  getHistory: (id, range = 120) =>
+    api.get(`/metrics/${id}`, { params: { range } }),
 
   getLatest: () =>
     api.get('/metrics/latest'),

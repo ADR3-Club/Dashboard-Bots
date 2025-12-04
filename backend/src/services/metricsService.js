@@ -1,4 +1,5 @@
 const pm2Service = require('./pm2Service');
+const redisService = require('./redisService');
 
 class MetricsService {
   constructor() {
@@ -6,7 +7,8 @@ class MetricsService {
     this.clients = new Set(); // SSE clients
     this.collectionInterval = null;
     this.isCollecting = false;
-    this.maxBufferSize = 60; // Keep 2 minutes of data at 2s interval
+    // In-memory buffer: keep 10 minutes of data at 2s interval (300 points) as fallback
+    this.maxBufferSize = 300;
   }
 
   /**
@@ -25,27 +27,32 @@ class MetricsService {
       try {
         const processes = await pm2Service.listProcesses();
 
-        processes.forEach(proc => {
-          // Initialize buffer if not exists
+        for (const proc of processes) {
+          const metricPoint = {
+            timestamp: Date.now(),
+            cpu: proc.cpu,
+            memory: proc.memory,
+            status: proc.status
+          };
+
+          // Store in Redis if available (for 24h history)
+          if (redisService.isAvailable()) {
+            await redisService.storeMetrics(proc.pm_id, metricPoint);
+          }
+
+          // Also store in memory buffer (fallback / recent data)
           if (!this.metricsBuffer.has(proc.pm_id)) {
             this.metricsBuffer.set(proc.pm_id, []);
           }
 
           const buffer = this.metricsBuffer.get(proc.pm_id);
-
-          // Add new metric point
-          buffer.push({
-            timestamp: Date.now(),
-            cpu: proc.cpu,
-            memory: proc.memory,
-            status: proc.status
-          });
+          buffer.push(metricPoint);
 
           // Keep only last N points (circular buffer)
           if (buffer.length > this.maxBufferSize) {
             buffer.shift();
           }
-        });
+        }
 
         // Broadcast to all connected SSE clients
         this.broadcast(processes);
@@ -70,9 +77,41 @@ class MetricsService {
 
   /**
    * Get historical metrics for a specific process
+   * @param {number} pmId - Process ID
+   * @param {number} range - Time range in minutes (default: 120 = 2 hours)
    */
-  getProcessMetrics(pmId) {
-    return this.metricsBuffer.get(pmId) || [];
+  async getProcessMetrics(pmId, range = 120) {
+    // For ranges > 10 minutes and Redis available, use Redis with aggregation
+    if (redisService.isAvailable() && range > 10) {
+      // Determine aggregation interval based on range
+      let interval = 1; // 1 minute intervals by default
+
+      if (range >= 1440) {        // 24h -> 5 minute intervals
+        interval = 5;
+      } else if (range >= 360) {  // 6h -> 2 minute intervals
+        interval = 2;
+      } else if (range >= 60) {   // 1h -> 1 minute intervals
+        interval = 1;
+      } else {                     // < 1h -> 30 second intervals
+        interval = 0.5;
+      }
+
+      const aggregated = await redisService.getAggregatedMetrics(pmId, range, interval);
+      if (aggregated && aggregated.length > 0) {
+        return aggregated;
+      }
+    }
+
+    // Fallback to memory buffer (for short ranges or if Redis unavailable)
+    const buffer = this.metricsBuffer.get(pmId) || [];
+
+    // Filter by time range if needed
+    if (range && buffer.length > 0) {
+      const cutoff = Date.now() - (range * 60 * 1000);
+      return buffer.filter(m => m.timestamp >= cutoff);
+    }
+
+    return buffer;
   }
 
   /**

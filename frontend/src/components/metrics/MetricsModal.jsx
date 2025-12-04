@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { X, RefreshCw, AlertCircle } from 'lucide-react';
 import MetricsChart from './MetricsChart';
 import { SkeletonChart } from '../common/Skeleton';
@@ -5,9 +6,18 @@ import { useProcessMetrics } from '../../hooks/useMetrics';
 import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts';
 import useLocaleStore from '../../stores/localeStore';
 
+// Time range options in minutes
+const RANGE_OPTIONS = [
+  { value: 10, label: '10 min' },
+  { value: 60, label: '1h' },
+  { value: 360, label: '6h' },
+  { value: 1440, label: '24h' },
+];
+
 export default function MetricsModal({ process, onClose }) {
   const { t } = useLocaleStore();
-  const { data: metrics, isLoading, error } = useProcessMetrics(process.pm_id);
+  const [range, setRange] = useState(60); // Default to 1 hour
+  const { data: metrics, isLoading, error } = useProcessMetrics(process.pm_id, range);
 
   // Keyboard shortcuts
   useKeyboardShortcuts({
@@ -23,9 +33,24 @@ export default function MetricsModal({ process, onClose }) {
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               {process.name}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Real-time CPU & Memory metrics (last 2 minutes)
-            </p>
+            <div className="flex items-center gap-3 mt-2">
+              <span className="text-sm text-gray-600 dark:text-gray-400">{t('metrics.timeRange')}:</span>
+              <div className="flex gap-1">
+                {RANGE_OPTIONS.map(({ value, label }) => (
+                  <button
+                    key={value}
+                    onClick={() => setRange(value)}
+                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                      range === value
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -60,11 +85,11 @@ export default function MetricsModal({ process, onClose }) {
                   {/* Info */}
                   <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      <strong>Data points:</strong> {metrics.length} (collected every 2 seconds)
+                      <strong>{t('metrics.dataPoints')}:</strong> {metrics.length}
                       <br />
-                      <strong>Time range:</strong> ~{Math.floor(metrics.length * 2 / 60)} minutes
+                      <strong>{t('metrics.selectedRange')}:</strong> {RANGE_OPTIONS.find(o => o.value === range)?.label}
                       <br />
-                      <strong>Auto-refresh:</strong> Every 5 seconds
+                      <strong>{t('metrics.autoRefresh')}:</strong> {range <= 60 ? '5s' : '30s'}
                     </p>
                   </div>
                 </>

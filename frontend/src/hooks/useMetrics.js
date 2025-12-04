@@ -30,16 +30,18 @@ export function useMetricsStream() {
 
 /**
  * Hook to fetch historical metrics for a specific process
- * Returns last 60 data points (2 minutes) collected every 2 seconds
+ * @param {number} pmId - Process ID
+ * @param {number} range - Time range in minutes (default: 120 = 2 hours)
+ * @param {boolean} enabled - Whether to fetch
  */
-export function useProcessMetrics(pmId, enabled = true) {
+export function useProcessMetrics(pmId, range = 120, enabled = true) {
   return useQuery({
-    queryKey: ['metrics', pmId],
+    queryKey: ['metrics', pmId, range],
     queryFn: async () => {
-      const response = await metricsAPI.getHistory(pmId);
+      const response = await metricsAPI.getHistory(pmId, range);
       return response.data.metrics;
     },
-    refetchInterval: 5000, // Refresh every 5 seconds
+    refetchInterval: range <= 60 ? 5000 : 30000, // Refresh faster for shorter ranges
     placeholderData: (previousData) => previousData,
     enabled,
   });

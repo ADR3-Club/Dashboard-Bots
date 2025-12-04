@@ -30,8 +30,10 @@ router.get('/stream', (req, res) => {
 /**
  * GET /api/metrics/:id
  * Get historical metrics for a specific process
+ * Query params:
+ *   - range: Time range in minutes (default: 120, max: 1440 = 24h)
  */
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const pmId = parseInt(req.params.id);
 
@@ -42,11 +44,16 @@ router.get('/:id', (req, res) => {
       });
     }
 
-    const metrics = metricsService.getProcessMetrics(pmId);
+    // Parse range parameter (default 2 hours, max 24 hours)
+    let range = parseInt(req.query.range) || 120;
+    range = Math.min(Math.max(range, 1), 1440); // Clamp between 1 min and 24h
+
+    const metrics = await metricsService.getProcessMetrics(pmId, range);
 
     res.json({
       success: true,
       pmId,
+      range,
       metrics,
       count: metrics.length
     });
