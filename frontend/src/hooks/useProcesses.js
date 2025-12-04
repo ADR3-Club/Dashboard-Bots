@@ -8,7 +8,7 @@ export function useProcesses() {
       const response = await processesAPI.getAll();
       return response.data.processes;
     },
-    refetchInterval: 5000, // Refresh every 5 seconds
+    refetchInterval: 1000, // Refresh every 1 second
   });
 }
 
