@@ -16,6 +16,8 @@ node_modules/
 # Logs
 logs/
 *.log
+# But keep component source files
+!frontend/src/components/logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
