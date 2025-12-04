@@ -509,8 +509,19 @@ export default function Settings() {
                     type="text"
                     value={userFormData.username}
                     onChange={(e) => handleUserFormChange('username', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                      userFormData.username.length > 0 && userFormData.username.length < 3
+                        ? 'border-red-500 dark:border-red-500'
+                        : 'border-gray-300 dark:border-gray-600'
+                    }`}
                   />
+                  <p className={`text-xs mt-1 ${
+                    userFormData.username.length > 0 && userFormData.username.length < 3
+                      ? 'text-red-500'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}>
+                    {t('users.usernameRequirement')}
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -520,8 +531,19 @@ export default function Settings() {
                     type="password"
                     value={userFormData.password}
                     onChange={(e) => handleUserFormChange('password', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                      userFormData.password.length > 0 && userFormData.password.length < 12
+                        ? 'border-red-500 dark:border-red-500'
+                        : 'border-gray-300 dark:border-gray-600'
+                    }`}
                   />
+                  <p className={`text-xs mt-1 ${
+                    userFormData.password.length > 0 && userFormData.password.length < 12
+                      ? 'text-red-500'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}>
+                    {t('users.passwordRequirement')}
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -546,7 +568,13 @@ export default function Settings() {
                 </button>
                 <button
                   onClick={handleSaveUser}
-                  disabled={createUserMutation.isPending || updateUserMutation.isPending}
+                  disabled={
+                    createUserMutation.isPending ||
+                    updateUserMutation.isPending ||
+                    userFormData.username.length < 3 ||
+                    (!editingUser && userFormData.password.length < 12) ||
+                    (editingUser && userFormData.password.length > 0 && userFormData.password.length < 12)
+                  }
                   className="btn btn-primary"
                 >
                   {(createUserMutation.isPending || updateUserMutation.isPending) ? '...' : t('users.save')}

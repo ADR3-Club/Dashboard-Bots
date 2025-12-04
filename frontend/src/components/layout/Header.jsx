@@ -11,7 +11,7 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useThemeStore();
-  const { user, logout } = useAuthStore();
+  const { user, logout, isAdmin } = useAuthStore();
   const { locale, toggleLocale, t } = useLocaleStore();
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -49,28 +49,33 @@ export default function Header() {
               <LayoutDashboard className="w-5 h-5" />
               <span className="hidden md:inline">{t('dashboard.title')}</span>
             </button>
-            <button
-              onClick={() => navigate('/history')}
-              className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                isActive('/history')
-                  ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
-            >
-              <Clock className="w-5 h-5" />
-              <span className="hidden md:inline">{t('history.title')}</span>
-            </button>
-            <button
-              onClick={() => navigate('/settings')}
-              className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                isActive('/settings')
-                  ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
-            >
-              <SettingsIcon className="w-5 h-5" />
-              <span className="hidden md:inline">{t('settings.title')}</span>
-            </button>
+            {/* Admin-only navigation items */}
+            {isAdmin() && (
+              <>
+                <button
+                  onClick={() => navigate('/history')}
+                  className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                    isActive('/history')
+                      ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <Clock className="w-5 h-5" />
+                  <span className="hidden md:inline">{t('history.title')}</span>
+                </button>
+                <button
+                  onClick={() => navigate('/settings')}
+                  className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                    isActive('/settings')
+                      ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <SettingsIcon className="w-5 h-5" />
+                  <span className="hidden md:inline">{t('settings.title')}</span>
+                </button>
+              </>
+            )}
           </div>
 
           {/* Right side - User info, theme toggle, logout */}
@@ -82,7 +87,7 @@ export default function Header() {
                   {user.username}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {t('header.administrator')}
+                  {user.role === 'admin' ? t('header.administrator') : t('header.user')}
                 </p>
               </div>
             )}

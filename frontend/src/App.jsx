@@ -33,6 +33,21 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+// Admin-only route component
+function AdminRoute({ children }) {
+  const { isAuthenticated, isAdmin } = useAuthStore();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isAdmin()) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+}
+
 function App() {
   const { initTheme } = useThemeStore();
 
@@ -60,17 +75,17 @@ function App() {
           <Route
             path="/history"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <History />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           <Route
             path="/settings"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <Settings />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           <Route

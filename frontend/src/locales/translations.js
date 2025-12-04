@@ -3,6 +3,7 @@ export const translations = {
     // Header
     'header.title': 'ADR3Club Bot Dashboard',
     'header.administrator': 'Administrateur',
+    'header.user': 'Utilisateur',
     'header.changePassword': 'Changer le mot de passe',
     'header.logout': 'Déconnexion',
 
@@ -239,6 +240,8 @@ export const translations = {
     'users.newPassword': 'Nouveau mot de passe (laisser vide pour ne pas changer)',
     'users.noUsers': 'Aucun utilisateur trouvé',
     'users.you': '(vous)',
+    'users.usernameRequirement': 'Minimum 3 caractères',
+    'users.passwordRequirement': 'Minimum 12 caractères',
 
     // Process Detail
     'processDetail.back': 'Retour',
@@ -270,6 +273,7 @@ export const translations = {
     // Header
     'header.title': 'ADR3Club Bot Dashboard',
     'header.administrator': 'Administrator',
+    'header.user': 'User',
     'header.changePassword': 'Change password',
     'header.logout': 'Logout',
 
@@ -507,6 +511,8 @@ export const translations = {
     'users.newPassword': 'New password (leave empty to keep current)',
     'users.noUsers': 'No users found',
     'users.you': '(you)',
+    'users.usernameRequirement': 'Minimum 3 characters',
+    'users.passwordRequirement': 'Minimum 12 characters',
 
     // Process Detail
     'processDetail.back': 'Back',
