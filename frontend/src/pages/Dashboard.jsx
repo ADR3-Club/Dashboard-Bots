@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import Layout from '../components/layout/Layout';
 import ProcessTable from '../components/dashboard/ProcessTable';
 import StatsCards from '../components/dashboard/StatsCards';
@@ -6,7 +6,9 @@ import SearchAndFilter from '../components/dashboard/SearchAndFilter';
 import BulkActionBar from '../components/dashboard/BulkActionBar';
 import LogViewer from '../components/logs/LogViewer';
 import AlertBanner from '../components/alerts/AlertBanner';
+import { SkeletonStatsCard } from '../components/common/Skeleton';
 import { useProcesses, useRestartProcess, useStopProcess } from '../hooks/useProcesses';
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import useLocaleStore from '../stores/localeStore';
 import useToast from '../hooks/useToast';
 
@@ -21,6 +23,14 @@ export default function Dashboard() {
   const toast = useToast();
   const restartMutation = useRestartProcess();
   const stopMutation = useStopProcess();
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    'r': () => refetch(),
+    'escape': () => {
+      if (selectedProcess) setSelectedProcess(null);
+    },
+  });
 
   // Filter, search, and sort processes
   const filteredProcesses = useMemo(() => {
@@ -159,11 +169,24 @@ export default function Dashboard() {
         <AlertBanner />
 
         {/* Statistics Cards */}
-        {!isLoading && processes && <StatsCards processes={processes} />}
+        {isLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonStatsCard key={i} />
+            ))}
+          </div>
+        ) : (
+          processes && <StatsCards processes={processes} />
+        )}
 
         {/* Search and Filter */}
-        {!isLoading && processes && (
-          <SearchAndFilter
+        {isLoading ? (
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+            <div className="w-32 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          </div>
+        ) : (
+          processes && <SearchAndFilter
             onSearchChange={handleSearchChange}
             onFilterChange={handleFilterChange}
             statusFilter={statusFilter}

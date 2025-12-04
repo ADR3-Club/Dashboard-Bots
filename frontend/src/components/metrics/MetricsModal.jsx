@@ -1,23 +1,18 @@
 import { X, RefreshCw, AlertCircle } from 'lucide-react';
-import { useEffect } from 'react';
 import MetricsChart from './MetricsChart';
+import { SkeletonChart } from '../common/Skeleton';
 import { useProcessMetrics } from '../../hooks/useMetrics';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts';
 import useLocaleStore from '../../stores/localeStore';
 
 export default function MetricsModal({ process, onClose }) {
   const { t } = useLocaleStore();
   const { data: metrics, isLoading, error } = useProcessMetrics(process.pm_id);
 
-  // Close on Escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    'escape': onClose,
+  });
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -43,14 +38,7 @@ export default function MetricsModal({ process, onClose }) {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          {isLoading && (
-            <div className="flex items-center justify-center h-64">
-              <RefreshCw className="w-8 h-8 animate-spin text-primary-600" />
-              <span className="ml-3 text-gray-600 dark:text-gray-400">
-                Loading metrics...
-              </span>
-            </div>
-          )}
+          {isLoading && <SkeletonChart />}
 
           {error && (
             <div className="flex items-center justify-center h-64 text-red-600 dark:text-red-400">
@@ -67,7 +55,7 @@ export default function MetricsModal({ process, onClose }) {
                 </div>
               ) : (
                 <>
-                  <MetricsChart metrics={metrics} />
+                  <MetricsChart metrics={metrics} processName={process.name} />
 
                   {/* Info */}
                   <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg">

@@ -49,6 +49,7 @@ export const translations = {
     'metrics.filter.all': 'Tout',
     'metrics.filter.cpu': 'CPU',
     'metrics.filter.memory': 'RAM',
+    'metrics.export': 'Exporter les métriques',
 
     // Alerts
     'alerts.unstableProcess': 'Processus instable',
@@ -81,6 +82,8 @@ export const translations = {
     'logs.autoScroll': 'Défilement auto',
     'logs.on': 'ACTIVÉ',
     'logs.off': 'DÉSACTIVÉ',
+    'logs.search': 'Rechercher...',
+    'logs.noMatch': 'Aucun log correspondant',
 
     // Login
     'login.title': 'Connexion',
@@ -329,6 +332,8 @@ export const translations = {
     'logs.autoScroll': 'Auto-scroll',
     'logs.on': 'ON',
     'logs.off': 'OFF',
+    'logs.search': 'Search...',
+    'logs.noMatch': 'No matching logs',
 
     // Login
     'login.title': 'Login',
@@ -411,6 +416,7 @@ export const translations = {
     'metrics.filter.all': 'All',
     'metrics.filter.cpu': 'CPU',
     'metrics.filter.memory': 'RAM',
+    'metrics.export': 'Export metrics',
 
     // Alerts
     'alerts.unstableProcess': 'Unstable Process',

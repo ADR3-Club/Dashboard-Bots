@@ -1,4 +1,5 @@
 import { AlertTriangle } from 'lucide-react';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts';
 
 export default function ConfirmDialog({
   isOpen,
@@ -10,6 +11,11 @@ export default function ConfirmDialog({
   cancelText = 'Cancel',
   type = 'warning' // 'warning', 'danger', 'info'
 }) {
+  // Keyboard shortcuts (only when open)
+  useKeyboardShortcuts({
+    'escape': onClose,
+  }, isOpen);
+
   if (!isOpen) return null;
 
   const typeStyles = {

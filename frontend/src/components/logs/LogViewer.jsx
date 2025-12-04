@@ -1,11 +1,41 @@
-import { useEffect, useRef } from 'react';
-import { X, Download, Trash2, Wifi, WifiOff } from 'lucide-react';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import { X, Download, Trash2, Wifi, WifiOff, Search } from 'lucide-react';
 import { useLogStream } from '../../hooks/useLogs';
+import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts';
 import { formatDateTime } from '../../utils/formatters';
+
+// Highlight matching text in logs
+function highlightMatch(text, term) {
+  if (!term) return text;
+  const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+  return parts.map((part, i) =>
+    regex.test(part) ? (
+      <mark key={i} className="bg-yellow-400 text-black px-0.5 rounded">
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  );
+}
 
 export default function LogViewer({ process, onClose }) {
   const { logs, isConnected, clearLogs, isAutoScroll } = useLogStream(process?.pm_id);
   const logContainerRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    'escape': onClose,
+  });
+
+  // Filter logs by search term
+  const filteredLogs = useMemo(() => {
+    if (!searchTerm.trim()) return logs;
+    const term = searchTerm.toLowerCase();
+    return logs.filter(log => log.line.toLowerCase().includes(term));
+  }, [logs, searchTerm]);
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -60,6 +90,17 @@ export default function LogViewer({ process, onClose }) {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Search input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search logs..."
+                className="pl-9 pr-3 py-1.5 w-48 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+            </div>
             <button
               onClick={clearLogs}
               className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors border border-transparent hover:border-red-200 dark:hover:border-red-800"
@@ -89,13 +130,13 @@ export default function LogViewer({ process, onClose }) {
           ref={logContainerRef}
           className="flex-1 overflow-y-auto p-4 bg-gray-900 font-mono text-sm"
         >
-          {logs.length === 0 ? (
+          {filteredLogs.length === 0 ? (
             <div className="text-gray-500 text-center py-8">
-              {isConnected ? 'Waiting for logs...' : 'Connecting...'}
+              {searchTerm ? 'No matching logs found' : (isConnected ? 'Waiting for logs...' : 'Connecting...')}
             </div>
           ) : (
             <div className="space-y-1">
-              {logs.map((log, index) => (
+              {filteredLogs.map((log, index) => (
                 <div
                   key={index}
                   className="text-gray-300 hover:bg-gray-800 px-2 py-1 rounded"
@@ -104,7 +145,7 @@ export default function LogViewer({ process, onClose }) {
                     {new Date(log.timestamp).toLocaleTimeString()}
                   </span>
                   <span className={log.historical ? 'text-gray-400' : ''}>
-                    {log.line}
+                    {searchTerm ? highlightMatch(log.line, searchTerm) : log.line}
                   </span>
                 </div>
               ))}
@@ -115,7 +156,7 @@ export default function LogViewer({ process, onClose }) {
         {/* Footer */}
         <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
           <div>
-            {logs.length} lines
+            {searchTerm ? `${filteredLogs.length}/${logs.length}` : logs.length} lines
           </div>
           <div>
             Auto-scroll: {isAutoScroll ? 'ON' : 'OFF'}

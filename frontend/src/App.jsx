@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import History from './pages/History';
 import Settings from './pages/Settings';
 import ProcessDetail from './pages/ProcessDetail';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import useAuthStore from './stores/authStore';
 import useThemeStore from './stores/themeStore';
 import useSessionTimeout from './hooks/useSessionTimeout';
@@ -60,47 +61,57 @@ function App() {
   }, [initTheme]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/history"
-            element={
-              <AdminRoute>
-                <History />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <AdminRoute>
-                <Settings />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/process/:name"
-            element={
-              <ProtectedRoute>
-                <ProcessDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </BrowserRouter>
-      <ToastContainer />
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <ErrorBoundary title="Dashboard Error" message="An error occurred while loading the dashboard.">
+                    <Dashboard />
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/history"
+              element={
+                <AdminRoute>
+                  <ErrorBoundary title="History Error" message="An error occurred while loading the history.">
+                    <History />
+                  </ErrorBoundary>
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <AdminRoute>
+                  <ErrorBoundary title="Settings Error" message="An error occurred while loading settings.">
+                    <Settings />
+                  </ErrorBoundary>
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/process/:name"
+              element={
+                <ProtectedRoute>
+                  <ErrorBoundary title="Process Details Error" message="An error occurred while loading process details.">
+                    <ProcessDetail />
+                  </ErrorBoundary>
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </BrowserRouter>
+        <ToastContainer />
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

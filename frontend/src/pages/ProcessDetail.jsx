@@ -22,10 +22,12 @@ import Layout from '../components/layout/Layout';
 import MetricsChart from '../components/metrics/MetricsChart';
 import LogViewerInline from '../components/logs/LogViewerInline';
 import ConfirmDialog from '../components/common/ConfirmDialog';
+import { SkeletonProcessDetail, SkeletonChart } from '../components/common/Skeleton';
 import { processesAPI } from '../services/api';
 import useLocaleStore from '../stores/localeStore';
 import useAuthStore from '../stores/authStore';
 import useToast from '../hooks/useToast';
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { useProcessMetrics } from '../hooks/useMetrics';
 
 // Format uptime
@@ -85,6 +87,16 @@ export default function ProcessDetail() {
   const [showMetrics, setShowMetrics] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    'r': () => refetch(),
+    'escape': () => {
+      if (confirmAction) setConfirmAction(null);
+      else if (showLogs) setShowLogs(false);
+      else if (showMetrics) setShowMetrics(false);
+    },
+  });
+
   // Fetch process details (use name from URL)
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['processDetails', name],
@@ -143,9 +155,7 @@ export default function ProcessDetail() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-        </div>
+        <SkeletonProcessDetail />
       </Layout>
     );
   }
@@ -306,12 +316,10 @@ export default function ProcessDetail() {
               {t('processDetail.metricsTitle')} - {details.name}
             </h3>
             {metricsLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-              </div>
+              <SkeletonChart />
             ) : (
               <>
-                <MetricsChart metrics={metrics} />
+                <MetricsChart metrics={metrics} processName={details.name} />
                 {metrics && metrics.length > 0 && (
                   <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg text-sm text-gray-600 dark:text-gray-400">
                     <strong>{t('processDetail.dataPoints')}:</strong> {metrics.length} •

@@ -2,6 +2,7 @@ import { RefreshCw, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-
 import { memo } from 'react';
 import ProcessRow from './ProcessRow';
 import ProcessCard from './ProcessCard';
+import { SkeletonProcessRow } from '../common/Skeleton';
 import useLocaleStore from '../../stores/localeStore';
 
 // Memoized sort icon component
@@ -42,14 +43,58 @@ function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, 
 
   if (isLoading) {
     return (
-      <div className="card p-8">
-        <div className="flex items-center justify-center">
-          <RefreshCw className="w-8 h-8 animate-spin text-primary-600" />
-          <span className="ml-3 text-gray-600 dark:text-gray-400">
-            {t('dashboard.loading')}
-          </span>
+      <>
+        {/* Desktop Skeleton Table */}
+        <div className="hidden md:block card overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <div className="h-6 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-9 w-9 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-800/50">
+                <tr>
+                  <th className="px-4 py-3"><div className="h-4 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></th>
+                  <th className="px-4 py-3"><div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></th>
+                  <th className="px-4 py-3"><div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></th>
+                  <th className="px-4 py-3"><div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></th>
+                  <th className="px-4 py-3"><div className="h-4 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></th>
+                  <th className="px-4 py-3"><div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></th>
+                  <th className="px-4 py-3"><div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></th>
+                  <th className="px-4 py-3"><div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" /></th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <SkeletonProcessRow key={i} />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+
+        {/* Mobile Skeleton Cards */}
+        <div className="md:hidden space-y-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-9 w-9 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          </div>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="card p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                <div className="h-4 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
     );
   }
 

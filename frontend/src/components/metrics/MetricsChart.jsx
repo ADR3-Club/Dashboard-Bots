@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { format } from 'date-fns';
 import { memo, useState } from 'react';
+import { Download } from 'lucide-react';
 import useLocaleStore from '../../stores/localeStore';
 
 // Register Chart.js components
@@ -26,9 +27,37 @@ ChartJS.register(
   Filler
 );
 
-function MetricsChart({ metrics }) {
+function MetricsChart({ metrics, processName = 'process' }) {
   const { t } = useLocaleStore();
   const [filter, setFilter] = useState('all'); // 'all' | 'cpu' | 'memory'
+
+  // Export metrics to CSV
+  const exportToCSV = () => {
+    if (!metrics || metrics.length === 0) return;
+
+    const headers = ['Timestamp', 'Date/Time', 'CPU (%)', 'Memory (MB)'];
+    const rows = metrics.map((point) => [
+      point.timestamp,
+      format(new Date(point.timestamp), 'yyyy-MM-dd HH:mm:ss'),
+      (point.cpu || 0).toFixed(2),
+      ((point.memory || 0) / (1024 * 1024)).toFixed(2),
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) => row.join(',')),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `metrics-${processName}-${format(new Date(), 'yyyy-MM-dd-HHmmss')}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   if (!metrics || metrics.length === 0) {
     return (
@@ -184,21 +213,31 @@ function MetricsChart({ metrics }) {
 
   return (
     <div>
-      {/* Filter buttons */}
-      <div className="flex gap-2 mb-4">
-        {filterButtons.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setFilter(key)}
-            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-              filter === key
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+      {/* Filter buttons and export */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex gap-2">
+          {filterButtons.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setFilter(key)}
+              className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                filter === key
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={exportToCSV}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          title={t('metrics.export')}
+        >
+          <Download className="w-4 h-4" />
+          CSV
+        </button>
       </div>
 
       {/* Chart */}
