@@ -26,8 +26,11 @@ export default function Dashboard() {
     if (!processes) return [];
 
     let result = processes.filter((process) => {
-      // Search by name
-      const matchesSearch = process.name.toLowerCase().includes(searchTerm.toLowerCase());
+      // Search by name or ID
+      const processId = String(process.pm_id || process.id);
+      const matchesSearch =
+        process.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        processId.includes(searchTerm);
 
       // Filter by status - handle both structures
       const status = process.pm2_env?.status || process.status;
