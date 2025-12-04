@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Moon, Sun, LogOut, Activity, Key } from 'lucide-react';
+import { Moon, Sun, LogOut, Key } from 'lucide-react';
 import useThemeStore from '../../stores/themeStore';
 import useAuthStore from '../../stores/authStore';
 import ChangePasswordModal from '../auth/ChangePasswordModal';
@@ -21,7 +21,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center space-x-3">
-            <Activity className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+            <img src="/NewLogo.png" alt="ADR3Club Logo" className="w-10 h-10 object-contain" />
             <div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                 ADR3Club Bot Dashboard

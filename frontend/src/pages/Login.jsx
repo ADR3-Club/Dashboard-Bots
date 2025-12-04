@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import useAuthStore from '../stores/authStore';
 import useThemeStore from '../stores/themeStore';
 
@@ -43,7 +43,7 @@ export default function Login() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <Activity className="w-16 h-16 text-primary-600 dark:text-primary-400" />
+            <img src="/NewLogo.png" alt="ADR3Club Logo" className="w-32 h-32 object-contain" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             ADR3Club Bot Dashboard
