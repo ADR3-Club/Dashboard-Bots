@@ -30,6 +30,21 @@ export const translations = {
     'actions.stop': 'Arrêter',
     'actions.start': 'Démarrer',
     'actions.viewLogs': 'Voir les logs',
+    'actions.viewMetrics': 'Voir les métriques',
+
+    // Metrics
+    'metrics.title': 'Métriques temps réel',
+    'metrics.subtitle': 'Métriques CPU & RAM (2 dernières minutes)',
+    'metrics.loading': 'Chargement des métriques...',
+    'metrics.error': 'Erreur lors du chargement des métriques',
+    'metrics.noData': 'Aucune donnée disponible pour le moment',
+    'metrics.dataPoints': 'Points de données',
+    'metrics.timeRange': 'Période',
+    'metrics.autoRefresh': 'Rafraîchissement auto',
+    'metrics.minutes': 'minutes',
+    'metrics.cpu': 'CPU (%)',
+    'metrics.memory': 'Mémoire (MB)',
+    'metrics.time': 'Temps',
 
     // Process Status
     'status.online': 'En ligne',
@@ -189,126 +204,7 @@ export const translations = {
     'actions.stop': 'Stop',
     'actions.start': 'Start',
     'actions.viewLogs': 'View logs',
-
-    // Process Status
-    'status.online': 'Online',
-    'status.stopped': 'Stopped',
-    'status.stopping': 'Stopping',
-    'status.errored': 'Errored',
-    'status.launching': 'Launching',
-
-    // Logs Viewer
-    'logs.title': 'Logs',
-    'logs.connected': 'Connected',
-    'logs.disconnected': 'Disconnected',
-    'logs.clear': 'Clear logs',
-    'logs.export': 'Export',
-    'logs.close': 'Close',
-    'logs.waiting': 'Waiting for logs...',
-    'logs.connecting': 'Connecting...',
-    'logs.lines': 'lines',
-    'logs.autoScroll': 'Auto-scroll',
-    'logs.on': 'ON',
-    'logs.off': 'OFF',
-
-    // Login
-    'login.title': 'Login',
-    'login.username': 'Username',
-    'login.password': 'Password',
-    'login.signIn': 'Sign In',
-    'login.signingIn': 'Signing in...',
-    'login.poweredBy': 'Powered by ADR3Club',
-
-    // Change Password
-    'changePassword.title': 'Change Password',
-    'changePassword.current': 'Current Password',
-    'changePassword.new': 'New Password',
-    'changePassword.confirm': 'Confirm Password',
-    'changePassword.submit': 'Change Password',
-    'changePassword.submitting': 'Changing...',
-    'changePassword.cancel': 'Cancel',
-    'changePassword.success': 'Password changed successfully!',
-    'changePassword.error.mismatch': 'Passwords do not match',
-    'changePassword.error.length': 'Password must be at least 6 characters',
-
-    // Confirm Dialog
-    'confirm.restart.title': 'Restart Process',
-    'confirm.restart.message': 'Are you sure you want to restart',
-    'confirm.restart.button': 'Restart',
-    'confirm.stop.title': 'Stop Process',
-    'confirm.stop.message': 'Are you sure you want to stop',
-    'confirm.stop.button': 'Stop',
-    'confirm.logout.title': 'Logout',
-    'confirm.logout.message': 'Are you sure you want to logout?',
-    'confirm.logout.button': 'Logout',
-    'confirm.cancel': 'Cancel',
-
-    // Session
-    'session.expired': 'Your session has expired. Please login again.',
-    'session.timeout': 'Session Expired',
-
-    // Stats
-    'stats.totalProcesses': 'Total Processes',
-    'stats.online': 'Online',
-    'stats.offline': 'Offline',
-    'stats.avgCPU': 'Avg CPU',
-    'stats.totalRAM': 'Total RAM',
-
-    // Search and Filter
-    'search.placeholder': 'Search by name...',
-    'filter.title': 'Filters',
-    'filter.status': 'Status',
-    'filter.all': 'All',
-    'filter.all': 'Tous',
-
-    // Bulk Actions
-    'bulk.selected': 'sélectionnés',
-    'bulk.restart': 'Redémarrer',
-    'bulk.stop': 'Arrêter',
-    'bulk.clear': 'Annuler',
-    'bulk.processes': 'processus',
-    'bulk.restarted': 'redémarré(s)',
-    'bulk.stopped': 'arrêté(s)',
-    'bulk.restarted': 'redémarré(s)',
-    'bulk.stopped': 'arrêté(s)',
-    'bulk.confirm.restart.title': 'Redémarrer plusieurs processus',
-    'bulk.confirm.restart.message': 'Êtes-vous sûr de vouloir redémarrer',
-    'bulk.confirm.restart.button': 'Redémarrer tout',
-    'bulk.confirm.stop.title': 'Arrêter plusieurs processus',
-    'bulk.confirm.stop.message': 'Êtes-vous sûr de vouloir arrêter',
-    'bulk.confirm.stop.button': 'Arrêter tout',
-  },
-  en: {
-    // Header
-    'header.title': 'ADR3Club Bot Dashboard',
-    'header.administrator': 'Administrator',
-    'header.changePassword': 'Change password',
-    'header.logout': 'Logout',
-
-    // Dashboard
-    'dashboard.title': 'Dashboard',
-    'dashboard.subtitle': 'Monitor and manage your PM2 processes',
-    'dashboard.processes': 'PM2 Processes',
-    'dashboard.refresh': 'Refresh',
-    'dashboard.loading': 'Loading processes...',
-    'dashboard.error': 'Failed to load processes',
-    'dashboard.noProcesses': 'No processes found',
-
-    // Process Table
-    'table.id': 'ID',
-    'table.name': 'Name',
-    'table.status': 'Status',
-    'table.uptime': 'Uptime',
-    'table.cpu': 'CPU',
-    'table.memory': 'Memory',
-    'table.restarts': 'Restarts',
-    'table.actions': 'Actions',
-
-    // Process Actions
-    'actions.restart': 'Restart',
-    'actions.stop': 'Stop',
-    'actions.start': 'Start',
-    'actions.viewLogs': 'View logs',
+    'actions.viewMetrics': 'View metrics',
 
     // Process Status
     'status.online': 'Online',
@@ -395,6 +291,20 @@ export const translations = {
     'bulk.confirm.stop.title': 'Stop Multiple Processes',
     'bulk.confirm.stop.message': 'Are you sure you want to stop',
     'bulk.confirm.stop.button': 'Stop All',
+
+    // Metrics
+    'metrics.title': 'Real-time Metrics',
+    'metrics.subtitle': 'CPU & RAM Metrics (last 2 minutes)',
+    'metrics.loading': 'Loading metrics...',
+    'metrics.error': 'Error loading metrics',
+    'metrics.noData': 'No metrics data available yet. Metrics will appear shortly.',
+    'metrics.dataPoints': 'Data points',
+    'metrics.timeRange': 'Time range',
+    'metrics.autoRefresh': 'Auto-refresh',
+    'metrics.cpu': 'CPU (%)',
+    'metrics.memory': 'Memory (MB)',
+    'metrics.time': 'Time',
+    'metrics.minutes': 'minutes',
 
     // History
     'history.title': 'History',
