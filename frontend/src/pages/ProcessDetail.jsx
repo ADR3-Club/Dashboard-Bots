@@ -111,7 +111,7 @@ export default function ProcessDetail() {
   const pmId = data?.details?.pm_id;
 
   // Fetch metrics for chart (only when we have pmId)
-  const { data: metrics, isLoading: metricsLoading } = useProcessMetrics(pmId, showMetrics && pmId !== undefined);
+  const { data: metrics, isLoading: metricsLoading } = useProcessMetrics(pmId, 60, showMetrics && pmId !== undefined);
 
   // Mutations (use pm_id for PM2 API calls)
   const restartMutation = useMutation({
