@@ -4,6 +4,33 @@ import ProcessRow from './ProcessRow';
 import ProcessCard from './ProcessCard';
 import useLocaleStore from '../../stores/localeStore';
 
+// Memoized sort icon component
+const SortIcon = memo(({ column, sortConfig }) => {
+  if (sortConfig?.key !== column) {
+    return <ArrowUpDown className="w-4 h-4 opacity-0 group-hover:opacity-50 transition-opacity" />;
+  }
+  return sortConfig.direction === 'asc'
+    ? <ArrowUp className="w-4 h-4" />
+    : <ArrowDown className="w-4 h-4" />;
+});
+
+SortIcon.displayName = 'SortIcon';
+
+// Memoized sortable header component
+const SortableHeader = memo(({ column, children, sortConfig, onSort }) => (
+  <th
+    className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors group"
+    onClick={() => onSort(column)}
+  >
+    <div className="flex items-center gap-2">
+      {children}
+      <SortIcon column={column} sortConfig={sortConfig} />
+    </div>
+  </th>
+));
+
+SortableHeader.displayName = 'SortableHeader';
+
 function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, error, onRefetch, onViewLogs, sortConfig, onSort, selectedIds = [], onToggleSelect, onToggleAll }) {
   const { t } = useLocaleStore();
 
@@ -12,27 +39,6 @@ function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, 
 
   const showCheckbox = onToggleSelect !== undefined;
   const allSelected = processes.length > 0 && processes.every(p => selectedIds.includes(p.pm_id));
-
-  const SortIcon = ({ column }) => {
-    if (sortConfig?.key !== column) {
-      return <ArrowUpDown className="w-4 h-4 opacity-0 group-hover:opacity-50 transition-opacity" />;
-    }
-    return sortConfig.direction === 'asc'
-      ? <ArrowUp className="w-4 h-4" />
-      : <ArrowDown className="w-4 h-4" />;
-  };
-
-  const SortableHeader = ({ column, children }) => (
-    <th
-      className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors group"
-      onClick={() => onSort(column)}
-    >
-      <div className="flex items-center gap-2">
-        {children}
-        <SortIcon column={column} />
-      </div>
-    </th>
-  );
 
   if (isLoading) {
     return (
@@ -101,15 +107,15 @@ function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, 
                     />
                   </th>
                 )}
-                <SortableHeader column="id">{t('table.id')}</SortableHeader>
-                <SortableHeader column="name">{t('table.name')}</SortableHeader>
+                <SortableHeader column="id" sortConfig={sortConfig} onSort={onSort}>{t('table.id')}</SortableHeader>
+                <SortableHeader column="name" sortConfig={sortConfig} onSort={onSort}>{t('table.name')}</SortableHeader>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {t('table.status')}
                 </th>
-                <SortableHeader column="uptime">{t('table.uptime')}</SortableHeader>
-                <SortableHeader column="cpu">{t('table.cpu')}</SortableHeader>
-                <SortableHeader column="memory">{t('table.memory')}</SortableHeader>
-                <SortableHeader column="restarts">{t('table.restarts')}</SortableHeader>
+                <SortableHeader column="uptime" sortConfig={sortConfig} onSort={onSort}>{t('table.uptime')}</SortableHeader>
+                <SortableHeader column="cpu" sortConfig={sortConfig} onSort={onSort}>{t('table.cpu')}</SortableHeader>
+                <SortableHeader column="memory" sortConfig={sortConfig} onSort={onSort}>{t('table.memory')}</SortableHeader>
+                <SortableHeader column="restarts" sortConfig={sortConfig} onSort={onSort}>{t('table.restarts')}</SortableHeader>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {t('table.actions')}
                 </th>
