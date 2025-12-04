@@ -51,6 +51,7 @@ export const translations = {
     'metrics.filter.cpu': 'CPU',
     'metrics.filter.memory': 'RAM',
     'metrics.export': 'Exporter les métriques',
+    'metrics.dataSpan': 'Données sur',
 
     // Alerts
     'alerts.unstableProcess': 'Processus instable',
@@ -419,6 +420,7 @@ export const translations = {
     'metrics.filter.cpu': 'CPU',
     'metrics.filter.memory': 'RAM',
     'metrics.export': 'Export metrics',
+    'metrics.dataSpan': 'Data spanning',
 
     // Alerts
     'alerts.unstableProcess': 'Unstable Process',

@@ -6,6 +6,26 @@ import { useProcessMetrics } from '../../hooks/useMetrics';
 import useKeyboardShortcuts from '../../hooks/useKeyboardShortcuts';
 import useLocaleStore from '../../stores/localeStore';
 
+// Format time span from metrics array
+function formatDataSpan(metrics) {
+  if (!metrics || metrics.length < 2) return null;
+  const firstTs = metrics[0].timestamp;
+  const lastTs = metrics[metrics.length - 1].timestamp;
+  const spanMs = lastTs - firstTs;
+  const spanSec = Math.floor(spanMs / 1000);
+  const spanMin = Math.floor(spanSec / 60);
+  const spanHour = Math.floor(spanMin / 60);
+
+  if (spanHour > 0) {
+    const remainingMin = spanMin % 60;
+    return remainingMin > 0 ? `${spanHour}h ${remainingMin}min` : `${spanHour}h`;
+  }
+  if (spanMin > 0) {
+    return `${spanMin}min`;
+  }
+  return `${spanSec}s`;
+}
+
 // Time range options in minutes
 const RANGE_OPTIONS = [
   { value: 10, label: '10 min' },
@@ -85,11 +105,11 @@ export default function MetricsModal({ process, onClose }) {
                   {/* Info */}
                   <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      <strong>{t('metrics.dataPoints')}:</strong> {metrics.length}
-                      <br />
-                      <strong>{t('metrics.selectedRange')}:</strong> {RANGE_OPTIONS.find(o => o.value === range)?.label}
-                      <br />
+                      <strong>{t('metrics.dataPoints')}:</strong> {metrics.length} •{' '}
                       <strong>{t('metrics.autoRefresh')}:</strong> {range <= 60 ? '5s' : '30s'}
+                      {formatDataSpan(metrics) && (
+                        <> • <strong>{t('metrics.dataSpan')}:</strong> {formatDataSpan(metrics)}</>
+                      )}
                     </p>
                   </div>
                 </>

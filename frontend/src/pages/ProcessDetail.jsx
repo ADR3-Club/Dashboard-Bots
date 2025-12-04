@@ -30,6 +30,26 @@ import useToast from '../hooks/useToast';
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { useProcessMetrics } from '../hooks/useMetrics';
 
+// Format time span from metrics array
+function formatDataSpan(metrics) {
+  if (!metrics || metrics.length < 2) return null;
+  const firstTs = metrics[0].timestamp;
+  const lastTs = metrics[metrics.length - 1].timestamp;
+  const spanMs = lastTs - firstTs;
+  const spanSec = Math.floor(spanMs / 1000);
+  const spanMin = Math.floor(spanSec / 60);
+  const spanHour = Math.floor(spanMin / 60);
+
+  if (spanHour > 0) {
+    const remainingMin = spanMin % 60;
+    return remainingMin > 0 ? `${spanHour}h ${remainingMin}min` : `${spanHour}h`;
+  }
+  if (spanMin > 0) {
+    return `${spanMin}min`;
+  }
+  return `${spanSec}s`;
+}
+
 // Format uptime
 function formatUptime(ms) {
   if (!ms || ms <= 0) return '-';
@@ -324,6 +344,9 @@ export default function ProcessDetail() {
                   <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg text-sm text-gray-600 dark:text-gray-400">
                     <strong>{t('processDetail.dataPoints')}:</strong> {metrics.length} •
                     <strong> {t('processDetail.autoRefresh')}:</strong> 5s
+                    {formatDataSpan(metrics) && (
+                      <> • <strong>{t('metrics.dataSpan')}:</strong> {formatDataSpan(metrics)}</>
+                    )}
                   </div>
                 )}
               </>
