@@ -4,8 +4,6 @@ import { useLogStream } from '../../hooks/useLogs';
 import { formatDateTime } from '../../utils/formatters';
 
 export default function LogViewer({ process, onClose }) {
-  console.log('[LogViewer] Process:', process);
-  console.log('[LogViewer] Process ID:', process?.pm_id);
   const { logs, isConnected, clearLogs, isAutoScroll } = useLogStream(process?.pm_id);
   const logContainerRef = useRef(null);
 

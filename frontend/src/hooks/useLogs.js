@@ -7,9 +7,6 @@ export function useLogStream(processId) {
   const [isAutoScroll, setIsAutoScroll] = useState(true);
   const maxLogs = 500; // Keep last 500 lines
 
-  console.log('[useLogStream] processId:', processId);
-  console.log('[useLogStream] URL:', processId !== null && processId !== undefined ? logsAPI.getStreamUrl(processId) : null);
-
   const handleMessage = useCallback((data) => {
     if (data.type === 'log') {
       setLogs((prev) => {
