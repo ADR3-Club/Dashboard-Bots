@@ -61,6 +61,9 @@ export const processesAPI = {
   getOne: (id) =>
     api.get(`/processes/${id}`),
 
+  getDetails: (id) =>
+    api.get(`/processes/${id}/details`),
+
   restart: (id) =>
     api.post(`/processes/${id}/restart`),
 

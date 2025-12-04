@@ -91,6 +91,71 @@ class PM2Service {
   }
 
   /**
+   * Get extended details of a single process by PM2 ID
+   */
+  async getProcessDetails(pmId) {
+    return new Promise((resolve, reject) => {
+      pm2.list((err, processes) => {
+        if (err) {
+          console.error('Error getting process details:', err);
+          reject(err);
+          return;
+        }
+
+        const proc = processes.find(p => p.pm_id === parseInt(pmId));
+
+        if (!proc) {
+          reject(new Error(`Process with PM ID ${pmId} not found`));
+          return;
+        }
+
+        // Return extended process information
+        const details = {
+          pm_id: proc.pm_id,
+          name: proc.name,
+          status: proc.pm2_env.status,
+          pid: proc.pid,
+          uptime: proc.pm2_env.pm_uptime ? Date.now() - proc.pm2_env.pm_uptime : 0,
+          cpu: proc.monit ? proc.monit.cpu : 0,
+          memory: proc.monit ? proc.monit.memory : 0,
+          restarts: proc.pm2_env.restart_time || 0,
+
+          // Extended info
+          script: proc.pm2_env.pm_exec_path,
+          cwd: proc.pm2_env.pm_cwd,
+          interpreter: proc.pm2_env.exec_interpreter || 'node',
+          interpreterArgs: proc.pm2_env.node_args || [],
+          args: proc.pm2_env.args || [],
+          execMode: proc.pm2_env.exec_mode,
+          instances: proc.pm2_env.instances,
+
+          // Environment
+          nodeVersion: proc.pm2_env.node_version,
+          version: proc.pm2_env.version,
+
+          // Logs paths
+          outLogPath: proc.pm2_env.pm_out_log_path,
+          errLogPath: proc.pm2_env.pm_err_log_path,
+          pidPath: proc.pm2_env.pm_pid_path,
+
+          // Timestamps
+          createdAt: proc.pm2_env.created_at,
+          startedAt: proc.pm2_env.pm_uptime,
+
+          // Watch mode
+          watch: proc.pm2_env.watch || false,
+          autorestart: proc.pm2_env.autorestart !== false,
+
+          // Resource limits
+          maxMemoryRestart: proc.pm2_env.max_memory_restart,
+        };
+
+        resolve(details);
+      });
+    });
+  }
+
+  /**
    * Restart a process by PM2 ID
    */
   async restartProcess(pmId) {

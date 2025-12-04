@@ -63,6 +63,44 @@ router.get('/:id', async (req, res) => {
 });
 
 /**
+ * GET /api/processes/:id/details
+ * Get extended details of a specific process
+ */
+router.get('/:id/details', async (req, res) => {
+  try {
+    const pmId = parseInt(req.params.id);
+
+    if (isNaN(pmId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid process ID'
+      });
+    }
+
+    const details = await pm2Service.getProcessDetails(pmId);
+
+    // Get recent history for this process
+    const history = await historyService.getRestartHistory({
+      pmId,
+      limit: 10
+    });
+
+    res.json({
+      success: true,
+      details,
+      history
+    });
+
+  } catch (error) {
+    console.error('Error getting process details:', error);
+    res.status(404).json({
+      success: false,
+      error: error.message || 'Process not found'
+    });
+  }
+});
+
+/**
  * POST /api/processes/:id/restart
  * Restart a specific process
  */

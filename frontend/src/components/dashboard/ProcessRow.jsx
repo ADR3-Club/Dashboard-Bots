@@ -1,4 +1,5 @@
-import { RefreshCw, FileText, Square, Play, TrendingUp } from 'lucide-react';
+import { RefreshCw, FileText, Square, Play, TrendingUp, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import StatusBadge from './StatusBadge';
 import { formatUptime, formatMemory, formatCPU } from '../../utils/formatters';
 import { useRestartProcess, useStopProcess, useStartProcess } from '../../hooks/useProcesses';
@@ -9,6 +10,7 @@ import useLocaleStore from '../../stores/localeStore';
 import useToast from '../../hooks/useToast';
 
 function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
+  const navigate = useNavigate();
   const { t } = useLocaleStore();
   const toast = useToast();
   const [isActionLoading, setIsActionLoading] = useState(false);
@@ -155,9 +157,17 @@ function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
           <button
             onClick={() => setShowMetrics(true)}
             className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-colors border border-transparent hover:border-blue-200 dark:hover:border-blue-800"
-            title="View metrics"
+            title={t('actions.viewMetrics')}
           >
             <TrendingUp className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={() => navigate(`/process/${process.pm_id}`)}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors border border-transparent hover:border-gray-300 dark:hover:border-gray-600"
+            title={t('processDetail.viewDetails')}
+          >
+            <Info className="w-4 h-4" />
           </button>
         </div>
       </td>
