@@ -81,28 +81,34 @@ class MetricsService {
    * @param {number} range - Time range in minutes (default: 120 = 2 hours)
    */
   async getProcessMetrics(pmId, range = 120) {
-    // For ranges > 10 minutes and Redis available, use Redis with aggregation
-    if (redisService.isAvailable() && range > 10) {
-      // Determine aggregation interval based on range
-      let interval = 1; // 1 minute intervals by default
+    // For Redis available, fetch from Redis
+    if (redisService.isAvailable()) {
+      // For short ranges (<= 60 min), return raw data (every 2 seconds)
+      if (range <= 60) {
+        const rawMetrics = await redisService.getMetrics(pmId, range);
+        if (rawMetrics && rawMetrics.length > 0) {
+          return rawMetrics;
+        }
+      } else {
+        // For longer ranges, aggregate to reduce data points
+        let interval = 1; // 1 minute intervals by default
 
-      if (range >= 1440) {        // 24h -> 5 minute intervals
-        interval = 5;
-      } else if (range >= 360) {  // 6h -> 2 minute intervals
-        interval = 2;
-      } else if (range >= 60) {   // 1h -> 1 minute intervals
-        interval = 1;
-      } else {                     // < 1h -> 30 second intervals
-        interval = 0.5;
-      }
+        if (range >= 1440) {        // 24h -> 5 minute intervals
+          interval = 5;
+        } else if (range >= 360) {  // 6h -> 2 minute intervals
+          interval = 2;
+        } else {                     // 1-6h -> 1 minute intervals
+          interval = 1;
+        }
 
-      const aggregated = await redisService.getAggregatedMetrics(pmId, range, interval);
-      if (aggregated && aggregated.length > 0) {
-        return aggregated;
+        const aggregated = await redisService.getAggregatedMetrics(pmId, range, interval);
+        if (aggregated && aggregated.length > 0) {
+          return aggregated;
+        }
       }
     }
 
-    // Fallback to memory buffer (for short ranges or if Redis unavailable)
+    // Fallback to memory buffer (if Redis unavailable)
     const buffer = this.metricsBuffer.get(pmId) || [];
 
     // Filter by time range if needed
