@@ -152,7 +152,7 @@ export default function Dashboard() {
         </div>
 
         {/* Statistics Cards */}
-        {!isLoading && processes && <StatsCards processes={filteredProcesses} />}
+        {!isLoading && processes && <StatsCards processes={processes} />}
 
         {/* Search and Filter */}
         {!isLoading && processes && (

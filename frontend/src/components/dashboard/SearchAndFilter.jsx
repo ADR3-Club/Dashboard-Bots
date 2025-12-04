@@ -73,7 +73,7 @@ export default function SearchAndFilter({ onSearchChange, onFilterChange, status
 
       {/* Filter options */}
       {showFilters && (
-        <div className="card p-4 animate-slide-in">
+        <div className="card p-4 animate-slide-down">
           <div className="flex flex-col sm:flex-row gap-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
               {t('filter.status')}:
