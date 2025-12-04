@@ -3,17 +3,17 @@ import StatusBadge from './StatusBadge';
 import { formatUptime, formatMemory, formatCPU } from '../../utils/formatters';
 import { useRestartProcess, useStopProcess, useStartProcess } from '../../hooks/useProcesses';
 import { useState } from 'react';
+import ConfirmDialog from '../common/ConfirmDialog';
 
 export default function ProcessRow({ process, onViewLogs }) {
   const [isActionLoading, setIsActionLoading] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: null });
 
   const restartMutation = useRestartProcess();
   const stopMutation = useStopProcess();
   const startMutation = useStartProcess();
 
   const handleRestart = async () => {
-    if (!confirm(`Restart ${process.name}?`)) return;
-
     setIsActionLoading(true);
     try {
       await restartMutation.mutateAsync(process.pm_id);
@@ -23,8 +23,6 @@ export default function ProcessRow({ process, onViewLogs }) {
   };
 
   const handleStop = async () => {
-    if (!confirm(`Stop ${process.name}?`)) return;
-
     setIsActionLoading(true);
     try {
       await stopMutation.mutateAsync(process.pm_id);
@@ -39,6 +37,22 @@ export default function ProcessRow({ process, onViewLogs }) {
       await startMutation.mutateAsync(process.pm_id);
     } finally {
       setIsActionLoading(false);
+    }
+  };
+
+  const openConfirmDialog = (action) => {
+    setConfirmDialog({ isOpen: true, action });
+  };
+
+  const closeConfirmDialog = () => {
+    setConfirmDialog({ isOpen: false, action: null });
+  };
+
+  const handleConfirm = () => {
+    if (confirmDialog.action === 'restart') {
+      handleRestart();
+    } else if (confirmDialog.action === 'stop') {
+      handleStop();
     }
   };
 
@@ -74,7 +88,7 @@ export default function ProcessRow({ process, onViewLogs }) {
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
           <button
-            onClick={handleRestart}
+            onClick={() => openConfirmDialog('restart')}
             disabled={isActionLoading}
             className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors disabled:opacity-50 border border-transparent hover:border-primary-200 dark:hover:border-primary-800"
             title="Restart"
@@ -84,7 +98,7 @@ export default function ProcessRow({ process, onViewLogs }) {
 
           {isOnline ? (
             <button
-              onClick={handleStop}
+              onClick={() => openConfirmDialog('stop')}
               disabled={isActionLoading}
               className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors disabled:opacity-50 border border-transparent hover:border-red-200 dark:hover:border-red-800"
               title="Stop"
@@ -111,6 +125,22 @@ export default function ProcessRow({ process, onViewLogs }) {
           </button>
         </div>
       </td>
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={closeConfirmDialog}
+        onConfirm={handleConfirm}
+        title={confirmDialog.action === 'restart' ? 'Restart Process' : 'Stop Process'}
+        message={
+          confirmDialog.action === 'restart'
+            ? `Are you sure you want to restart ${process.name}?`
+            : `Are you sure you want to stop ${process.name}?`
+        }
+        confirmText={confirmDialog.action === 'restart' ? 'Restart' : 'Stop'}
+        cancelText="Cancel"
+        type={confirmDialog.action === 'restart' ? 'warning' : 'danger'}
+      />
     </tr>
   );
 }

@@ -3,16 +3,16 @@ import { Moon, Sun, LogOut, Key } from 'lucide-react';
 import useThemeStore from '../../stores/themeStore';
 import useAuthStore from '../../stores/authStore';
 import ChangePasswordModal from '../auth/ChangePasswordModal';
+import ConfirmDialog from '../common/ConfirmDialog';
 
 export default function Header() {
   const { theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = () => {
-    if (confirm('Are you sure you want to logout?')) {
-      logout();
-    }
+    logout();
   };
 
   return (
@@ -68,7 +68,7 @@ export default function Header() {
 
             {/* Logout button */}
             <button
-              onClick={handleLogout}
+              onClick={() => setShowLogoutConfirm(true)}
               className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors"
               aria-label="Logout"
             >
@@ -82,6 +82,18 @@ export default function Header() {
       {showChangePassword && (
         <ChangePasswordModal onClose={() => setShowChangePassword(false)} />
       )}
+
+      {/* Logout confirmation */}
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Logout"
+        message="Are you sure you want to logout?"
+        confirmText="Logout"
+        cancelText="Cancel"
+        type="warning"
+      />
     </header>
   );
 }
