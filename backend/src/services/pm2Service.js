@@ -129,7 +129,7 @@ class PM2Service {
    */
   async startProcess(pmId) {
     return new Promise((resolve, reject) => {
-      pm2.start(pmId, (err, proc) => {
+      pm2.restart(pmId, (err, proc) => {
         if (err) {
           console.error(`Error starting process ${pmId}:`, err);
           reject(err);

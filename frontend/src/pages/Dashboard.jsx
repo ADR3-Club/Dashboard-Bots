@@ -121,7 +121,7 @@ export default function Dashboard() {
   const handleBulkRestart = async () => {
     try {
       await Promise.all(selectedIds.map((id) => restartMutation.mutateAsync(id)));
-      toast.success(`${selectedIds.length} ${t('bulk.processes')} ${t('bulk.restart').toLowerCase()}ed`);
+      toast.success(`${selectedIds.length} ${t('bulk.processes')} ${t('bulk.restarted')}`);
       setSelectedIds([]);
     } catch (error) {
       toast.error(t('dashboard.error'));
@@ -131,7 +131,7 @@ export default function Dashboard() {
   const handleBulkStop = async () => {
     try {
       await Promise.all(selectedIds.map((id) => stopMutation.mutateAsync(id)));
-      toast.success(`${selectedIds.length} ${t('bulk.processes')} ${t('bulk.stop').toLowerCase()}ped`);
+      toast.success(`${selectedIds.length} ${t('bulk.processes')} ${t('bulk.stopped')}`);
       setSelectedIds([]);
     } catch (error) {
       toast.error(t('dashboard.error'));
