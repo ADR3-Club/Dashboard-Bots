@@ -2,11 +2,11 @@ import { RefreshCw, FileText, Square, Play } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import { formatUptime, formatMemory, formatCPU } from '../../utils/formatters';
 import { useRestartProcess, useStopProcess, useStartProcess } from '../../hooks/useProcesses';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import ConfirmDialog from '../common/ConfirmDialog';
 import useLocaleStore from '../../stores/localeStore';
 
-export default function ProcessCard({ process, onViewLogs }) {
+function ProcessCard({ process, onViewLogs }) {
   const { t } = useLocaleStore();
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: null });
@@ -183,3 +183,5 @@ export default function ProcessCard({ process, onViewLogs }) {
     </>
   );
 }
+
+export default memo(ProcessCard);

@@ -2,11 +2,11 @@ import { RefreshCw, FileText, Square, Play } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import { formatUptime, formatMemory, formatCPU } from '../../utils/formatters';
 import { useRestartProcess, useStopProcess, useStartProcess } from '../../hooks/useProcesses';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import ConfirmDialog from '../common/ConfirmDialog';
 import useLocaleStore from '../../stores/localeStore';
 
-export default function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
+function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
   const { t } = useLocaleStore();
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: null });
@@ -159,3 +159,5 @@ export default function ProcessRow({ process, onViewLogs, selectedIds = [], onTo
     </tr>
   );
 }
+
+export default memo(ProcessRow);
