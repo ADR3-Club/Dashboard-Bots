@@ -20,12 +20,13 @@ import {
 } from 'lucide-react';
 import Layout from '../components/layout/Layout';
 import MetricsChart from '../components/metrics/MetricsChart';
-import LogViewer from '../components/logs/LogViewer';
+import LogViewerInline from '../components/logs/LogViewerInline';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { processesAPI } from '../services/api';
 import useLocaleStore from '../stores/localeStore';
 import useAuthStore from '../stores/authStore';
 import useToast from '../hooks/useToast';
+import { useProcessMetrics } from '../hooks/useMetrics';
 
 // Format uptime
 function formatUptime(ms) {
@@ -83,6 +84,9 @@ export default function ProcessDetail() {
   const [showLogs, setShowLogs] = useState(false);
   const [showMetrics, setShowMetrics] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
+
+  // Fetch metrics for chart
+  const { data: metrics, isLoading: metricsLoading } = useProcessMetrics(parseInt(id), showMetrics);
 
   // Fetch process details
   const { data, isLoading, error, refetch } = useQuery({
@@ -295,8 +299,30 @@ export default function ProcessDetail() {
         {/* Metrics Chart */}
         {showMetrics && (
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <MetricsChart processId={parseInt(id)} processName={details.name} />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              {t('processDetail.metricsTitle')} - {details.name}
+            </h3>
+            {metricsLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+              </div>
+            ) : (
+              <>
+                <MetricsChart metrics={metrics} />
+                {metrics && metrics.length > 0 && (
+                  <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg text-sm text-gray-600 dark:text-gray-400">
+                    <strong>{t('processDetail.dataPoints')}:</strong> {metrics.length} •
+                    <strong> {t('processDetail.autoRefresh')}:</strong> 5s
+                  </div>
+                )}
+              </>
+            )}
           </div>
+        )}
+
+        {/* Logs Viewer Inline */}
+        {showLogs && (
+          <LogViewerInline process={{ pm_id: parseInt(id), name: details.name }} />
         )}
 
         {/* Process Info */}
@@ -383,14 +409,6 @@ export default function ProcessDetail() {
           </div>
         </div>
       </div>
-
-      {/* Log Viewer Modal */}
-      {showLogs && (
-        <LogViewer
-          process={{ pm_id: parseInt(id), name: details.name }}
-          onClose={() => setShowLogs(false)}
-        />
-      )}
 
       {/* Confirm Dialog */}
       <ConfirmDialog

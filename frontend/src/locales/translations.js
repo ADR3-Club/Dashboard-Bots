@@ -268,6 +268,9 @@ export const translations = {
     'processDetail.stopError': 'Erreur lors de l\'arrêt',
     'processDetail.started': 'Processus démarré',
     'processDetail.startError': 'Erreur lors du démarrage',
+    'processDetail.metricsTitle': 'Métriques temps réel',
+    'processDetail.dataPoints': 'Points de données',
+    'processDetail.autoRefresh': 'Rafraîchissement auto',
   },
   en: {
     // Header
@@ -539,5 +542,8 @@ export const translations = {
     'processDetail.stopError': 'Error stopping process',
     'processDetail.started': 'Process started',
     'processDetail.startError': 'Error starting process',
+    'processDetail.metricsTitle': 'Real-time Metrics',
+    'processDetail.dataPoints': 'Data points',
+    'processDetail.autoRefresh': 'Auto-refresh',
   }
 };
