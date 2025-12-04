@@ -20,6 +20,60 @@ class HistoryService {
   }
 
   /**
+   * Log a stop event
+   */
+  async logStop(pmId, processName, triggeredBy = 'system', previousUptime = 0) {
+    try {
+      const result = await database.run(
+        `INSERT INTO restart_history (pm_id, process_name, reason, triggered_by, previous_uptime)
+         VALUES (?, ?, ?, ?, ?)`,
+        [pmId, processName, 'manual_stop', triggeredBy, previousUptime]
+      );
+
+      return { id: result.id, success: true };
+    } catch (error) {
+      console.error('Error logging stop:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Log a start event
+   */
+  async logStart(pmId, processName, triggeredBy = 'system') {
+    try {
+      const result = await database.run(
+        `INSERT INTO restart_history (pm_id, process_name, reason, triggered_by, previous_uptime)
+         VALUES (?, ?, ?, ?, ?)`,
+        [pmId, processName, 'manual_start', triggeredBy, 0]
+      );
+
+      return { id: result.id, success: true };
+    } catch (error) {
+      console.error('Error logging start:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Log a delete event
+   */
+  async logDelete(pmId, processName, triggeredBy = 'system') {
+    try {
+      const result = await database.run(
+        `INSERT INTO restart_history (pm_id, process_name, reason, triggered_by, previous_uptime)
+         VALUES (?, ?, ?, ?, ?)`,
+        [pmId, processName, 'manual_delete', triggeredBy, 0]
+      );
+
+      return { id: result.id, success: true };
+    } catch (error) {
+      console.error('Error logging delete:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get restart history with optional filters
    */
   async getRestartHistory(filters = {}) {

@@ -122,8 +122,20 @@ router.post('/:id/stop', async (req, res) => {
       });
     }
 
+    // Get process info before stopping
     const process = await pm2Service.getProcess(pmId);
+    const previousUptime = Math.floor(process.uptime / 1000); // Convert to seconds
+
+    // Stop the process
     await pm2Service.stopProcess(pmId);
+
+    // Log stop in history
+    await historyService.logStop(
+      pmId,
+      process.name,
+      req.user.username,
+      previousUptime
+    );
 
     res.json({
       success: true,
@@ -157,6 +169,13 @@ router.post('/:id/start', async (req, res) => {
     const process = await pm2Service.getProcess(pmId);
     await pm2Service.startProcess(pmId);
 
+    // Log start in history
+    await historyService.logStart(
+      pmId,
+      process.name,
+      req.user.username
+    );
+
     res.json({
       success: true,
       message: `Process ${process.name} started successfully`
@@ -188,6 +207,13 @@ router.delete('/:id', async (req, res) => {
 
     const process = await pm2Service.getProcess(pmId);
     await pm2Service.deleteProcess(pmId);
+
+    // Log delete in history
+    await historyService.logDelete(
+      pmId,
+      process.name,
+      req.user.username
+    );
 
     res.json({
       success: true,
