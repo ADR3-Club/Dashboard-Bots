@@ -27,13 +27,17 @@ export function useServerRestart() {
         } else if (serverIdRef.current !== currentServerId) {
           // Server ID changed - server was restarted
           clearInterval(intervalRef.current);
-          logout();
+          await logout();
           addToast({
             type: 'warning',
             title: t('session.expired'),
             message: t('login.signIn'),
-            duration: 7000
+            duration: 3000
           });
+          // Redirect to login page after a short delay
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 500);
         }
       } catch (error) {
         // If we get an error (like 401), the session is already invalid
