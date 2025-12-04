@@ -4,6 +4,8 @@ import { useLogStream } from '../../hooks/useLogs';
 import { formatDateTime } from '../../utils/formatters';
 
 export default function LogViewer({ process, onClose }) {
+  console.log('[LogViewer] Process:', process);
+  console.log('[LogViewer] Process ID:', process?.pm_id);
   const { logs, isConnected, clearLogs, isAutoScroll } = useLogStream(process?.pm_id);
   const logContainerRef = useRef(null);
 
@@ -30,8 +32,14 @@ export default function LogViewer({ process, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="card w-full max-w-5xl max-h-[80vh] flex flex-col">
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="card w-full max-w-5xl max-h-[80vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div className="flex items-center gap-3">

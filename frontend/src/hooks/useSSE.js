@@ -8,21 +8,27 @@ export function useSSE(url, options = {}) {
   const { enabled = true, onMessage, onError, onConnect } = options;
 
   useEffect(() => {
-    if (!enabled || !url) return;
+    if (!enabled || !url) {
+      console.log('[useSSE] Not enabled or no URL', { enabled, url });
+      return;
+    }
 
     const token = localStorage.getItem('token');
     if (!token) {
+      console.error('[useSSE] No authentication token');
       setError('No authentication token');
       return;
     }
 
     // Add token to URL as query parameter for SSE
     const urlWithToken = `${url}${url.includes('?') ? '&' : '?'}token=${token}`;
+    console.log('[useSSE] Connecting to:', urlWithToken.replace(token, '[TOKEN]'));
 
     const eventSource = new EventSource(urlWithToken);
     eventSourceRef.current = eventSource;
 
     eventSource.onopen = () => {
+      console.log('[useSSE] Connection opened');
       setIsConnected(true);
       setError(null);
       if (onConnect) onConnect();
@@ -31,17 +37,18 @@ export function useSSE(url, options = {}) {
     eventSource.onmessage = (event) => {
       try {
         const parsedData = JSON.parse(event.data);
+        console.log('[useSSE] Message received:', parsedData);
         setData(parsedData);
         if (onMessage) onMessage(parsedData);
       } catch (err) {
-        console.error('Error parsing SSE data:', err);
+        console.error('[useSSE] Error parsing SSE data:', err);
         setError(err.message);
         if (onError) onError(err);
       }
     };
 
     eventSource.onerror = (err) => {
-      console.error('SSE error:', err);
+      console.error('[useSSE] Connection error:', err, 'ReadyState:', eventSource.readyState);
       setError('Connection error');
       setIsConnected(false);
       if (onError) onError(err);
