@@ -15,7 +15,7 @@ export default function Dashboard() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [selectedIds, setSelectedIds] = useState([]);
-  const { data: processes, isLoading } = useProcesses();
+  const { data: processes, isLoading, error, refetch } = useProcesses();
   const { t } = useLocaleStore();
   const toast = useToast();
   const restartMutation = useRestartProcess();
@@ -167,6 +167,8 @@ export default function Dashboard() {
         <ProcessTable
           processes={filteredProcesses}
           isLoading={isLoading}
+          error={error}
+          onRefetch={refetch}
           onViewLogs={handleViewLogs}
           sortConfig={sortConfig}
           onSort={handleSort}

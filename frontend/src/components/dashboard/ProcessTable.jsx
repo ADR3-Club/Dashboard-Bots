@@ -1,11 +1,9 @@
 import { RefreshCw, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
-import { useProcesses } from '../../hooks/useProcesses';
 import ProcessRow from './ProcessRow';
 import ProcessCard from './ProcessCard';
 import useLocaleStore from '../../stores/localeStore';
 
-export default function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, onViewLogs, sortConfig, onSort, selectedIds = [], onToggleSelect, onToggleAll }) {
-  const { error, refetch } = useProcesses();
+export default function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, error, onRefetch, onViewLogs, sortConfig, onSort, selectedIds = [], onToggleSelect, onToggleAll }) {
   const { t } = useLocaleStore();
 
   const processes = filteredProcesses;
@@ -79,7 +77,7 @@ export default function ProcessTable({ processes: filteredProcesses, isLoading: 
             {t('dashboard.processes')} ({processes.length})
           </h2>
           <button
-            onClick={() => refetch()}
+            onClick={() => onRefetch()}
             className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors border border-transparent hover:border-primary-200 dark:hover:border-primary-800"
             title={t('dashboard.refresh')}
           >
@@ -138,7 +136,7 @@ export default function ProcessTable({ processes: filteredProcesses, isLoading: 
             {t('dashboard.processes')} ({processes.length})
           </h2>
           <button
-            onClick={() => refetch()}
+            onClick={() => onRefetch()}
             className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors"
             title={t('dashboard.refresh')}
           >

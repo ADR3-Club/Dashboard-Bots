@@ -1,14 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { processesAPI } from '../services/api';
 
-export function useProcesses() {
+export function useProcesses(options = {}) {
   return useQuery({
     queryKey: ['processes'],
     queryFn: async () => {
       const response = await processesAPI.getAll();
       return response.data.processes;
     },
-    refetchInterval: 1000, // Refresh every 1 second
+    refetchInterval: options.refetchInterval !== undefined ? options.refetchInterval : 1000, // Refresh every 1 second
   });
 }
 
