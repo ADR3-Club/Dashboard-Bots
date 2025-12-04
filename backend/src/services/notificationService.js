@@ -235,7 +235,7 @@ class NotificationService {
         return { success: false, reason: 'Alert notifications disabled' };
       }
 
-      const emoji = severity === 'critical' ? '=4' : severity === 'high' ? '=à' : '=á';
+      const emoji = severity === 'critical' ? '=4' : severity === 'high' ? '=ï¿½' : '=ï¿½';
       const title = `${emoji} Alert: Unstable Process - ${processName}`;
       const description = `Process **${processName}** has crashed **${crashCount} times** in the last **${timeWindow} minutes** (threshold: ${threshold}).`;
 
@@ -295,6 +295,44 @@ class NotificationService {
     } catch (error) {
       console.error('Error testing webhook:', error);
       return { success: false, reason: error.message };
+    }
+  }
+  /**
+   * Get cleanup settings
+   */
+  async getCleanupSettings() {
+    try {
+      const result = await database.get(
+        `SELECT value FROM settings WHERE key = 'history_retention_days'`
+      );
+
+      return {
+        retentionDays: result ? parseInt(result.value) : 30,
+        autoCleanup: true, // Always enabled with cron job
+      };
+    } catch (error) {
+      console.error('Error getting cleanup settings:', error);
+      return {
+        retentionDays: 30,
+        autoCleanup: true,
+      };
+    }
+  }
+
+  /**
+   * Update cleanup settings
+   */
+  async updateCleanupSettings(retentionDays) {
+    try {
+      await database.run(
+        `INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)`,
+        ['history_retention_days', retentionDays.toString()]
+      );
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating cleanup settings:', error);
+      throw error;
     }
   }
 }

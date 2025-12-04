@@ -36,3 +36,30 @@ export function useTestWebhook() {
     mutationFn: (type) => settingsAPI.testWebhook(type),
   });
 }
+
+/**
+ * Hook to get cleanup settings
+ */
+export function useCleanupSettings() {
+  return useQuery({
+    queryKey: ['settings', 'cleanup'],
+    queryFn: async () => {
+      const response = await settingsAPI.getCleanup();
+      return response.data.settings;
+    },
+  });
+}
+
+/**
+ * Hook to update cleanup settings
+ */
+export function useUpdateCleanupSettings() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (settings) => settingsAPI.updateCleanup(settings),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings', 'cleanup'] });
+    },
+  });
+}

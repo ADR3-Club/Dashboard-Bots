@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const cron = require('node-cron');
 
 // Import config and services
 const database = require('./config/database');
@@ -233,6 +234,19 @@ async function startServer() {
     // Start metrics collection
     console.log('[4/4] Starting metrics collection...');
     metricsService.startCollection();
+
+    // Setup history cleanup cron job (runs daily at 2 AM)
+    console.log('[5/5] Setting up history cleanup cron job...');
+    cron.schedule('0 2 * * *', async () => {
+      try {
+        console.log('Running scheduled history cleanup...');
+        const settings = await notificationService.getCleanupSettings();
+        const result = await historyService.cleanOldHistory(settings.retentionDays);
+        console.log(`History cleanup completed: ${result.restartsDeleted} restarts, ${result.crashesDeleted} crashes deleted`);
+      } catch (error) {
+        console.error('Error in scheduled history cleanup:', error);
+      }
+    });
 
     // Start HTTP server
     app.listen(PORT, () => {

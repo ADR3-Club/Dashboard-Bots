@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Save, TestTube2, Bell } from 'lucide-react';
+import { Save, TestTube2, Bell, Trash2 } from 'lucide-react';
 import Layout from '../components/layout/Layout';
-import { useWebhookSettings, useUpdateWebhookSettings, useTestWebhook } from '../hooks/useSettings';
+import { useWebhookSettings, useUpdateWebhookSettings, useTestWebhook, useCleanupSettings, useUpdateCleanupSettings } from '../hooks/useSettings';
 import useLocaleStore from '../stores/localeStore';
 import useToast from '../hooks/useToast';
 
@@ -9,7 +9,9 @@ export default function Settings() {
   const { t } = useLocaleStore();
   const toast = useToast();
   const { data: settings, isLoading } = useWebhookSettings();
+  const { data: cleanupSettings, isLoading: cleanupLoading } = useCleanupSettings();
   const updateMutation = useUpdateWebhookSettings();
+  const updateCleanupMutation = useUpdateCleanupSettings();
   const testMutation = useTestWebhook();
 
   const [formData, setFormData] = useState({
@@ -21,19 +23,36 @@ export default function Settings() {
     notifyOnAlert: true,
   });
 
+  const [cleanupData, setCleanupData] = useState({
+    retentionDays: 30,
+  });
+
   useEffect(() => {
     if (settings) {
       setFormData(settings);
     }
   }, [settings]);
 
+  useEffect(() => {
+    if (cleanupSettings) {
+      setCleanupData({ retentionDays: cleanupSettings.retentionDays });
+    }
+  }, [cleanupSettings]);
+
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleCleanupChange = (field, value) => {
+    setCleanupData(prev => ({ ...prev, [field]: value }));
+  };
+
   const handleSave = async () => {
     try {
-      await updateMutation.mutateAsync(formData);
+      await Promise.all([
+        updateMutation.mutateAsync(formData),
+        updateCleanupMutation.mutateAsync(cleanupData),
+      ]);
       toast.success(t('settings.saved'));
     } catch (error) {
       toast.error(t('settings.saveError'));
@@ -49,7 +68,7 @@ export default function Settings() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || cleanupLoading) {
     return (
       <Layout>
         <div className="flex items-center justify-center h-64">
@@ -236,16 +255,60 @@ export default function Settings() {
               </label>
             </div>
           </div>
+        </div>
+
+        {/* Cleanup Settings Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <Trash2 className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {t('settings.cleanup.title')}
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {t('settings.cleanup.subtitle')}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('settings.cleanup.retentionDays')}
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="365"
+                value={cleanupData.retentionDays}
+                onChange={(e) => handleCleanupChange('retentionDays', parseInt(e.target.value))}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {t('settings.cleanup.retentionHelp')}
+              </p>
+            </div>
+
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <p className="text-sm text-blue-800 dark:text-blue-300">
+                <span className="font-medium">{t('settings.cleanup.autoCleanup')}</span>
+                <br />
+                {t('settings.cleanup.autoCleanupDesc')}
+              </p>
+            </div>
+          </div>
 
           {/* Footer */}
           <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
             <button
               onClick={handleSave}
-              disabled={updateMutation.isPending}
+              disabled={updateMutation.isPending || updateCleanupMutation.isPending}
               className="btn btn-primary flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
-              {updateMutation.isPending ? t('settings.saving') : t('settings.save')}
+              {(updateMutation.isPending || updateCleanupMutation.isPending) ? t('settings.saving') : t('settings.save')}
             </button>
           </div>
         </div>

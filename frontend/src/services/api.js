@@ -170,6 +170,12 @@ export const settingsAPI = {
 
   testWebhook: (type) =>
     api.post('/settings/webhooks/test', { type }),
+
+  getCleanup: () =>
+    api.get('/settings/cleanup'),
+
+  updateCleanup: (settings) =>
+    api.put('/settings/cleanup', settings),
 };
 
 // Health check

@@ -122,4 +122,56 @@ router.post('/webhooks/test', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/settings/cleanup
+ * Get history cleanup settings
+ */
+router.get('/cleanup', async (req, res) => {
+  try {
+    const settings = await notificationService.getCleanupSettings();
+
+    res.json({
+      success: true,
+      settings
+    });
+  } catch (error) {
+    console.error('Error getting cleanup settings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get cleanup settings'
+    });
+  }
+});
+
+/**
+ * PUT /api/settings/cleanup
+ * Update history cleanup settings
+ */
+router.put('/cleanup', async (req, res) => {
+  try {
+    const { retentionDays } = req.body;
+
+    // Validate retention days
+    if (!retentionDays || retentionDays < 1 || retentionDays > 365) {
+      return res.status(400).json({
+        success: false,
+        message: 'Retention days must be between 1 and 365'
+      });
+    }
+
+    await notificationService.updateCleanupSettings(retentionDays);
+
+    res.json({
+      success: true,
+      message: 'Cleanup settings updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating cleanup settings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update cleanup settings'
+    });
+  }
+});
+
 module.exports = router;

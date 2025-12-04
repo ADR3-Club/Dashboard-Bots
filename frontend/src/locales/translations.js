@@ -206,6 +206,14 @@ export const translations = {
     'settings.webhooks.notifyOnCrashDesc': 'Recevoir une notification lorsqu\'un processus crash',
     'settings.webhooks.notifyOnAlert': 'Notifier lors d\'une alerte',
     'settings.webhooks.notifyOnAlertDesc': 'Recevoir une notification lors du déclenchement d\'alertes',
+
+    // Cleanup Settings
+    'settings.cleanup.title': 'Nettoyage de l\'historique',
+    'settings.cleanup.subtitle': 'Configurez la rétention automatique de l\'historique',
+    'settings.cleanup.retentionDays': 'Période de rétention (jours)',
+    'settings.cleanup.retentionHelp': 'L\'historique plus ancien sera supprimé automatiquement',
+    'settings.cleanup.autoCleanup': 'Nettoyage automatique activé',
+    'settings.cleanup.autoCleanupDesc': 'Le nettoyage s\'exécute automatiquement tous les jours à 2h du matin',
   },
   en: {
     // Header
@@ -415,5 +423,13 @@ export const translations = {
     'settings.webhooks.notifyOnCrashDesc': 'Receive a notification when a process crashes',
     'settings.webhooks.notifyOnAlert': 'Notify on alert',
     'settings.webhooks.notifyOnAlertDesc': 'Receive a notification when alerts are triggered',
+
+    // Cleanup Settings
+    'settings.cleanup.title': 'History Cleanup',
+    'settings.cleanup.subtitle': 'Configure automatic history retention',
+    'settings.cleanup.retentionDays': 'Retention Period (days)',
+    'settings.cleanup.retentionHelp': 'History older than this will be automatically deleted',
+    'settings.cleanup.autoCleanup': 'Auto-cleanup enabled',
+    'settings.cleanup.autoCleanupDesc': 'Cleanup runs automatically every day at 2 AM',
   }
 };
