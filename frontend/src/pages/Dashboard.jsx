@@ -13,7 +13,7 @@ export default function Dashboard() {
   const [selectedProcess, setSelectedProcess] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState({ key: 'id', direction: 'asc' });
   const [selectedIds, setSelectedIds] = useState([]);
   const { data: processes, isLoading, error, refetch } = useProcesses();
   const { t } = useLocaleStore();
