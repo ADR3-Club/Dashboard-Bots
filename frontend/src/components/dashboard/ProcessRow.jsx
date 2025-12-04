@@ -61,7 +61,7 @@ export default function ProcessRow({ process, onViewLogs, selectedIds = [], onTo
     }
   };
 
-  const isOnline = process.status === 'online';
+  const isOnline = (process.pm2_env?.status || process.status) === 'online';
 
   return (
     <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
@@ -86,19 +86,19 @@ export default function ProcessRow({ process, onViewLogs, selectedIds = [], onTo
         </div>
       </td>
       <td className="px-4 py-3">
-        <StatusBadge status={process.status} />
+        <StatusBadge status={process.pm2_env?.status || process.status} />
       </td>
       <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-        {formatUptime(process.uptime)}
+        {formatUptime(process.pm2_env?.pm_uptime || process.uptime)}
       </td>
       <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-        {formatCPU(process.cpu)}
+        {formatCPU(process.monit?.cpu || process.cpu)}
       </td>
       <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-        {formatMemory(process.memory)}
+        {formatMemory(process.monit?.memory || process.memory)}
       </td>
       <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-        {process.restarts}
+        {process.pm2_env?.restart_time || process.restarts || 0}
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">

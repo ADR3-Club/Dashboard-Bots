@@ -8,12 +8,18 @@ export default function StatsCards({ processes }) {
   // Calculate statistics
   const stats = {
     total: processes.length,
-    online: processes.filter(p => p.pm2_env.status === 'online').length,
-    offline: processes.filter(p => p.pm2_env.status !== 'online').length,
-    totalCPU: processes.reduce((sum, p) => sum + (p.monit?.cpu || 0), 0),
-    totalRAM: processes.reduce((sum, p) => sum + (p.monit?.memory || 0), 0),
+    online: processes.filter(p => {
+      const status = p.pm2_env?.status || p.status;
+      return status === 'online';
+    }).length,
+    offline: processes.filter(p => {
+      const status = p.pm2_env?.status || p.status;
+      return status !== 'online';
+    }).length,
+    totalCPU: processes.reduce((sum, p) => sum + (p.monit?.cpu || p.cpu || 0), 0),
+    totalRAM: processes.reduce((sum, p) => sum + (p.monit?.memory || p.memory || 0), 0),
     avgCPU: processes.length > 0
-      ? processes.reduce((sum, p) => sum + (p.monit?.cpu || 0), 0) / processes.length
+      ? processes.reduce((sum, p) => sum + (p.monit?.cpu || p.cpu || 0), 0) / processes.length
       : 0,
   };
 

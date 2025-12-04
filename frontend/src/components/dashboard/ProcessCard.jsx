@@ -15,7 +15,7 @@ export default function ProcessCard({ process, onViewLogs }) {
   const stopMutation = useStopProcess();
   const startMutation = useStartProcess();
 
-  const isOnline = process.pm2_env?.status === 'online';
+  const isOnline = (process.pm2_env?.status || process.status) === 'online';
 
   const openConfirmDialog = (action) => {
     setConfirmDialog({ isOpen: true, action });
@@ -77,7 +77,7 @@ export default function ProcessCard({ process, onViewLogs }) {
               <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
                 #{process.pm_id}
               </span>
-              <StatusBadge status={process.pm2_env?.status} />
+              <StatusBadge status={process.pm2_env?.status || process.status} />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
               {process.name}
@@ -92,7 +92,7 @@ export default function ProcessCard({ process, onViewLogs }) {
               {t('table.uptime')}
             </p>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {formatUptime(process.pm2_env?.pm_uptime)}
+              {formatUptime(process.pm2_env?.pm_uptime || process.uptime)}
             </p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
@@ -100,7 +100,7 @@ export default function ProcessCard({ process, onViewLogs }) {
               {t('table.cpu')}
             </p>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {formatCPU(process.monit?.cpu)}
+              {formatCPU(process.monit?.cpu || process.cpu)}
             </p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
@@ -108,7 +108,7 @@ export default function ProcessCard({ process, onViewLogs }) {
               {t('table.memory')}
             </p>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {formatMemory(process.monit?.memory)}
+              {formatMemory(process.monit?.memory || process.memory)}
             </p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
@@ -116,7 +116,7 @@ export default function ProcessCard({ process, onViewLogs }) {
               {t('table.restarts')}
             </p>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {process.pm2_env?.restart_time || 0}
+              {process.pm2_env?.restart_time || process.restarts || 0}
             </p>
           </div>
         </div>

@@ -29,8 +29,8 @@ export default function Dashboard() {
       // Search by name
       const matchesSearch = process.name.toLowerCase().includes(searchTerm.toLowerCase());
 
-      // Filter by status
-      const status = process.pm2_env.status;
+      // Filter by status - handle both structures
+      const status = process.pm2_env?.status || process.status;
       const matchesFilter =
         statusFilter === 'all' ||
         status === statusFilter;
@@ -49,24 +49,24 @@ export default function Dashboard() {
             bVal = b.name.toLowerCase();
             break;
           case 'cpu':
-            aVal = a.monit?.cpu || 0;
-            bVal = b.monit?.cpu || 0;
+            aVal = a.monit?.cpu || a.cpu || 0;
+            bVal = b.monit?.cpu || b.cpu || 0;
             break;
           case 'memory':
-            aVal = a.monit?.memory || 0;
-            bVal = b.monit?.memory || 0;
+            aVal = a.monit?.memory || a.memory || 0;
+            bVal = b.monit?.memory || b.memory || 0;
             break;
           case 'uptime':
-            aVal = a.pm2_env?.pm_uptime || 0;
-            bVal = b.pm2_env?.pm_uptime || 0;
+            aVal = a.pm2_env?.pm_uptime || a.uptime || 0;
+            bVal = b.pm2_env?.pm_uptime || b.uptime || 0;
             break;
           case 'restarts':
-            aVal = a.pm2_env?.restart_time || 0;
-            bVal = b.pm2_env?.restart_time || 0;
+            aVal = a.pm2_env?.restart_time || a.restarts || 0;
+            bVal = b.pm2_env?.restart_time || b.restarts || 0;
             break;
           case 'id':
-            aVal = a.pm_id;
-            bVal = b.pm_id;
+            aVal = a.pm_id || a.id;
+            bVal = b.pm_id || b.id;
             break;
           default:
             return 0;
