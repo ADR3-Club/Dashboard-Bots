@@ -31,7 +31,7 @@ export function useServerRestart() {
           addToast({
             type: 'warning',
             title: t('session.expired'),
-            message: t('login.signIn'),
+            message: '',
             duration: 3000
           });
           // Redirect to login page after a short delay
