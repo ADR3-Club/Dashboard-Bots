@@ -4,13 +4,16 @@ class RedisService {
   constructor() {
     this.client = null;
     this.isConnected = false;
-    this.enabled = process.env.REDIS_ENABLED === 'true';
+    this.enabled = false;
   }
 
   /**
    * Connect to Redis
    */
   async connect() {
+    // Check env var at connect time (after dotenv.config() has been called)
+    this.enabled = process.env.REDIS_ENABLED === 'true';
+
     if (!this.enabled) {
       console.log('Redis disabled (set REDIS_ENABLED=true to enable)');
       return false;
