@@ -46,6 +46,9 @@ export const translations = {
     'metrics.cpu': 'CPU (%)',
     'metrics.memory': 'Mémoire (MB)',
     'metrics.time': 'Temps',
+    'metrics.filter.all': 'Tout',
+    'metrics.filter.cpu': 'CPU',
+    'metrics.filter.memory': 'RAM',
 
     // Alerts
     'alerts.unstableProcess': 'Processus instable',
@@ -405,6 +408,9 @@ export const translations = {
     'metrics.memory': 'Memory (MB)',
     'metrics.time': 'Time',
     'metrics.minutes': 'minutes',
+    'metrics.filter.all': 'All',
+    'metrics.filter.cpu': 'CPU',
+    'metrics.filter.memory': 'RAM',
 
     // Alerts
     'alerts.unstableProcess': 'Unstable Process',

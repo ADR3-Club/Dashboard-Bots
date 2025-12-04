@@ -170,7 +170,7 @@ function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
           </button>
 
           <button
-            onClick={() => navigate(`/process/${process.pm_id}`)}
+            onClick={() => navigate(`/process/${encodeURIComponent(process.name)}`)}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors border border-transparent hover:border-gray-300 dark:hover:border-gray-600"
             title={t('processDetail.viewDetails')}
           >

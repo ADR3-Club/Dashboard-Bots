@@ -91,9 +91,35 @@ class PM2Service {
   }
 
   /**
-   * Get extended details of a single process by PM2 ID
+   * Get details of a single process by name
    */
-  async getProcessDetails(pmId) {
+  async getProcessByName(name) {
+    const processes = await this.listProcesses();
+    const process = processes.find(p => p.name === name);
+
+    if (!process) {
+      throw new Error(`Process with name "${name}" not found`);
+    }
+
+    return process;
+  }
+
+  /**
+   * Get process by ID or name (helper for routes)
+   */
+  async getProcessByIdOrName(identifier) {
+    // If it's a number, search by ID
+    if (!isNaN(identifier)) {
+      return this.getProcess(parseInt(identifier));
+    }
+    // Otherwise search by name
+    return this.getProcessByName(decodeURIComponent(identifier));
+  }
+
+  /**
+   * Get extended details of a single process by PM2 ID or name
+   */
+  async getProcessDetails(identifier) {
     return new Promise((resolve, reject) => {
       pm2.list((err, processes) => {
         if (err) {
@@ -102,10 +128,16 @@ class PM2Service {
           return;
         }
 
-        const proc = processes.find(p => p.pm_id === parseInt(pmId));
+        // Find by ID or name
+        let proc;
+        if (!isNaN(identifier)) {
+          proc = processes.find(p => p.pm_id === parseInt(identifier));
+        } else {
+          proc = processes.find(p => p.name === decodeURIComponent(identifier));
+        }
 
         if (!proc) {
-          reject(new Error(`Process with PM ID ${pmId} not found`));
+          reject(new Error(`Process "${identifier}" not found`));
           return;
         }
 

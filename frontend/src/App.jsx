@@ -89,7 +89,7 @@ function App() {
             }
           />
           <Route
-            path="/process/:id"
+            path="/process/:name"
             element={
               <ProtectedRoute>
                 <ProcessDetail />

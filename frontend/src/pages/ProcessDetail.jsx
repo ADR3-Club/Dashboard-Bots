@@ -74,7 +74,7 @@ function StatusBadge({ status }) {
 }
 
 export default function ProcessDetail() {
-  const { id } = useParams();
+  const { name } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useLocaleStore();
@@ -85,43 +85,46 @@ export default function ProcessDetail() {
   const [showMetrics, setShowMetrics] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
 
-  // Fetch metrics for chart
-  const { data: metrics, isLoading: metricsLoading } = useProcessMetrics(parseInt(id), showMetrics);
-
-  // Fetch process details
+  // Fetch process details (use name from URL)
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['processDetails', id],
+    queryKey: ['processDetails', name],
     queryFn: async () => {
-      const response = await processesAPI.getDetails(id);
+      const response = await processesAPI.getDetails(encodeURIComponent(name));
       return response.data;
     },
     refetchInterval: 5000, // Auto-refresh every 5 seconds
   });
 
-  // Mutations
+  // Get pm_id from loaded details for metrics and actions
+  const pmId = data?.details?.pm_id;
+
+  // Fetch metrics for chart (only when we have pmId)
+  const { data: metrics, isLoading: metricsLoading } = useProcessMetrics(pmId, showMetrics && pmId !== undefined);
+
+  // Mutations (use pm_id for PM2 API calls)
   const restartMutation = useMutation({
-    mutationFn: () => processesAPI.restart(id),
+    mutationFn: () => processesAPI.restart(pmId),
     onSuccess: () => {
       toast.success(t('processDetail.restarted'));
-      queryClient.invalidateQueries(['processDetails', id]);
+      queryClient.invalidateQueries(['processDetails', name]);
     },
     onError: () => toast.error(t('processDetail.restartError')),
   });
 
   const stopMutation = useMutation({
-    mutationFn: () => processesAPI.stop(id),
+    mutationFn: () => processesAPI.stop(pmId),
     onSuccess: () => {
       toast.success(t('processDetail.stopped'));
-      queryClient.invalidateQueries(['processDetails', id]);
+      queryClient.invalidateQueries(['processDetails', name]);
     },
     onError: () => toast.error(t('processDetail.stopError')),
   });
 
   const startMutation = useMutation({
-    mutationFn: () => processesAPI.start(id),
+    mutationFn: () => processesAPI.start(pmId),
     onSuccess: () => {
       toast.success(t('processDetail.started'));
-      queryClient.invalidateQueries(['processDetails', id]);
+      queryClient.invalidateQueries(['processDetails', name]);
     },
     onError: () => toast.error(t('processDetail.startError')),
   });
@@ -321,8 +324,8 @@ export default function ProcessDetail() {
         )}
 
         {/* Logs Viewer Inline */}
-        {showLogs && (
-          <LogViewerInline process={{ pm_id: parseInt(id), name: details.name }} />
+        {showLogs && pmId !== undefined && (
+          <LogViewerInline process={{ pm_id: pmId, name: details.name }} />
         )}
 
         {/* Process Info */}

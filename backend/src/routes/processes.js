@@ -63,25 +63,18 @@ router.get('/:id', async (req, res) => {
 });
 
 /**
- * GET /api/processes/:id/details
- * Get extended details of a specific process
+ * GET /api/processes/:identifier/details
+ * Get extended details of a specific process (by ID or name)
  */
-router.get('/:id/details', async (req, res) => {
+router.get('/:identifier/details', async (req, res) => {
   try {
-    const pmId = parseInt(req.params.id);
+    const identifier = req.params.identifier;
 
-    if (isNaN(pmId)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid process ID'
-      });
-    }
+    const details = await pm2Service.getProcessDetails(identifier);
 
-    const details = await pm2Service.getProcessDetails(pmId);
-
-    // Get recent history for this process
+    // Get recent history for this process (use pm_id from details)
     const history = await historyService.getRestartHistory({
-      pmId,
+      pmId: details.pm_id,
       limit: 10
     });
 
