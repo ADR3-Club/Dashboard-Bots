@@ -7,7 +7,7 @@ class MetricsService {
     this.clients = new Set(); // SSE clients
     this.collectionInterval = null;
     this.isCollecting = false;
-    // In-memory buffer: keep 10 minutes of data at 2s interval (300 points) as fallback
+    // In-memory buffer: keep 50 minutes of data at 10s interval (300 points) as fallback
     this.maxBufferSize = 300;
   }
 
@@ -21,7 +21,7 @@ class MetricsService {
     }
 
     this.isCollecting = true;
-    console.log('✓ Starting metrics collection (2s interval)');
+    console.log('✓ Starting metrics collection (10s interval)');
 
     this.collectionInterval = setInterval(async () => {
       try {
@@ -60,7 +60,7 @@ class MetricsService {
       } catch (error) {
         console.error('Error collecting metrics:', error);
       }
-    }, 2000); // Collect every 2 seconds
+    }, 10000); // Collect every 10 seconds
   }
 
   /**
@@ -83,7 +83,7 @@ class MetricsService {
   async getProcessMetrics(pmId, range = 120) {
     // For Redis available, fetch from Redis
     if (redisService.isAvailable()) {
-      // For short ranges (<= 60 min), return raw data (every 2 seconds)
+      // For short ranges (<= 60 min), return raw data (every 10 seconds)
       if (range <= 60) {
         const rawMetrics = await redisService.getMetrics(pmId, range);
         if (rawMetrics && rawMetrics.length > 0) {
