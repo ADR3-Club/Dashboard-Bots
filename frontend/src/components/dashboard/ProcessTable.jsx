@@ -1,9 +1,10 @@
 import { RefreshCw, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { memo } from 'react';
 import ProcessRow from './ProcessRow';
 import ProcessCard from './ProcessCard';
 import useLocaleStore from '../../stores/localeStore';
 
-export default function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, error, onRefetch, onViewLogs, sortConfig, onSort, selectedIds = [], onToggleSelect, onToggleAll }) {
+function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, error, onRefetch, onViewLogs, sortConfig, onSort, selectedIds = [], onToggleSelect, onToggleAll }) {
   const { t } = useLocaleStore();
 
   const processes = filteredProcesses;
@@ -154,3 +155,5 @@ export default function ProcessTable({ processes: filteredProcesses, isLoading: 
     </>
   );
 }
+
+export default memo(ProcessTable);

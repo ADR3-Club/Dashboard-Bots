@@ -9,6 +9,7 @@ export function useProcesses(options = {}) {
       return response.data.processes;
     },
     refetchInterval: options.refetchInterval !== undefined ? options.refetchInterval : 1000, // Refresh every 1 second
+    placeholderData: (previousData) => previousData, // Keep previous data during refetch to avoid flicker
   });
 }
 

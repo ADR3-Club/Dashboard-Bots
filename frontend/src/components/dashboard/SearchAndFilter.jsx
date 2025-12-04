@@ -1,8 +1,8 @@
 import { Search, Filter, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import useLocaleStore from '../../stores/localeStore';
 
-export default function SearchAndFilter({ onSearchChange, onFilterChange, statusFilter }) {
+function SearchAndFilter({ onSearchChange, onFilterChange, statusFilter }) {
   const { t } = useLocaleStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -99,3 +99,5 @@ export default function SearchAndFilter({ onSearchChange, onFilterChange, status
     </div>
   );
 }
+
+export default memo(SearchAndFilter);

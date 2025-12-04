@@ -1,8 +1,9 @@
 import { Activity, Server, AlertCircle, Cpu, HardDrive } from 'lucide-react';
 import { formatMemory, formatCPU } from '../../utils/formatters';
 import useLocaleStore from '../../stores/localeStore';
+import { memo } from 'react';
 
-export default function StatsCards({ processes }) {
+function StatsCards({ processes }) {
   const { t } = useLocaleStore();
 
   // Calculate statistics
@@ -99,3 +100,5 @@ export default function StatsCards({ processes }) {
     </div>
   );
 }
+
+export default memo(StatsCards);

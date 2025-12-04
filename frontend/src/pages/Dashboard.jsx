@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import Layout from '../components/layout/Layout';
 import ProcessTable from '../components/dashboard/ProcessTable';
 import StatsCards from '../components/dashboard/StatsCards';
@@ -81,42 +81,42 @@ export default function Dashboard() {
     return result;
   }, [processes, searchTerm, statusFilter, sortConfig]);
 
-  const handleViewLogs = (process) => {
+  const handleViewLogs = useCallback((process) => {
     setSelectedProcess(process);
-  };
+  }, []);
 
-  const handleCloseLogs = () => {
+  const handleCloseLogs = useCallback(() => {
     setSelectedProcess(null);
-  };
+  }, []);
 
-  const handleSearchChange = (term) => {
+  const handleSearchChange = useCallback((term) => {
     setSearchTerm(term);
-  };
+  }, []);
 
-  const handleFilterChange = (filter) => {
+  const handleFilterChange = useCallback((filter) => {
     setStatusFilter(filter);
-  };
+  }, []);
 
-  const handleSort = (key) => {
+  const handleSort = useCallback((key) => {
     setSortConfig((prev) => ({
       key,
       direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
-  };
+  }, []);
 
-  const handleToggleSelect = (id) => {
+  const handleToggleSelect = useCallback((id) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
-  };
+  }, []);
 
-  const handleToggleAll = () => {
+  const handleToggleAll = useCallback(() => {
     if (selectedIds.length === filteredProcesses.length) {
       setSelectedIds([]);
     } else {
       setSelectedIds(filteredProcesses.map((p) => p.pm_id));
     }
-  };
+  }, [selectedIds.length, filteredProcesses]);
 
   const handleBulkRestart = async () => {
     try {
