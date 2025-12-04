@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import useAuthStore from '../stores/authStore';
 import useLocaleStore from '../stores/localeStore';
 import useToastStore from '../stores/toastStore';
@@ -18,13 +18,7 @@ export function useServerRestart() {
 
     const checkServerId = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const response = await axios.get('/api/auth/server-id', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
+        const response = await api.get('/auth/server-id');
         const currentServerId = response.data.serverId;
 
         if (serverIdRef.current === null) {
