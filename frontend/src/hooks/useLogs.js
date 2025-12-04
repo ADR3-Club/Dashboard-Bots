@@ -8,7 +8,7 @@ export function useLogStream(processId) {
   const maxLogs = 500; // Keep last 500 lines
 
   console.log('[useLogStream] processId:', processId);
-  console.log('[useLogStream] URL:', processId ? logsAPI.getStreamUrl(processId) : null);
+  console.log('[useLogStream] URL:', processId !== null && processId !== undefined ? logsAPI.getStreamUrl(processId) : null);
 
   const handleMessage = useCallback((data) => {
     if (data.type === 'log') {
@@ -26,9 +26,9 @@ export function useLogStream(processId) {
   }, []);
 
   const { error, isConnected, close } = useSSE(
-    processId ? logsAPI.getStreamUrl(processId) : null,
+    processId !== null && processId !== undefined ? logsAPI.getStreamUrl(processId) : null,
     {
-      enabled: !!processId,
+      enabled: processId !== null && processId !== undefined,
       onMessage: handleMessage,
     }
   );
