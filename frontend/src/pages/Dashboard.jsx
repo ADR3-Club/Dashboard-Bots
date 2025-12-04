@@ -5,6 +5,7 @@ import StatsCards from '../components/dashboard/StatsCards';
 import SearchAndFilter from '../components/dashboard/SearchAndFilter';
 import BulkActionBar from '../components/dashboard/BulkActionBar';
 import LogViewer from '../components/logs/LogViewer';
+import AlertBanner from '../components/alerts/AlertBanner';
 import { useProcesses, useRestartProcess, useStopProcess } from '../hooks/useProcesses';
 import useLocaleStore from '../stores/localeStore';
 import useToast from '../hooks/useToast';
@@ -153,6 +154,9 @@ export default function Dashboard() {
             {t('dashboard.subtitle')}
           </p>
         </div>
+
+        {/* Alert Banner */}
+        <AlertBanner />
 
         {/* Statistics Cards */}
         {!isLoading && processes && <StatsCards processes={processes} />}

@@ -139,6 +139,27 @@ export const historyAPI = {
     api.delete('/history/clean', { params: { days } }),
 };
 
+// Alerts API
+export const alertsAPI = {
+  getAlerts: () =>
+    api.get('/alerts'),
+
+  getStatistics: () =>
+    api.get('/alerts/statistics'),
+
+  getSettings: () =>
+    api.get('/alerts/settings'),
+
+  updateSettings: (settings) =>
+    api.put('/alerts/settings', settings),
+
+  dismissAlert: (pmId, processName) =>
+    api.post(`/alerts/${pmId}/dismiss`, { processName }),
+
+  checkProcess: (pmId, processName) =>
+    api.get(`/alerts/check/${pmId}`, { params: { processName } }),
+};
+
 // Health check
 export const healthAPI = {
   check: () =>

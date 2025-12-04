@@ -10,6 +10,7 @@ const database = require('./config/database');
 const pm2Service = require('./services/pm2Service');
 const metricsService = require('./services/metricsService');
 const historyService = require('./services/historyService');
+const alertService = require('./services/alertService');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -17,6 +18,7 @@ const processesRoutes = require('./routes/processes');
 const logsRoutes = require('./routes/logs');
 const metricsRoutes = require('./routes/metrics');
 const historyRoutes = require('./routes/history');
+const alertsRoutes = require('./routes/alerts');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -61,6 +63,7 @@ app.use('/api/processes', processesRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/metrics', metricsRoutes);
 app.use('/api/history', historyRoutes);
+app.use('/api/alerts', alertsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -149,6 +152,16 @@ function setupPM2EventListeners() {
           data.process.pm2_env?.status,
           data.process.pm2_env?.exit_code
         );
+
+        // Check if this crash triggers an alert
+        const alertCheck = await alertService.checkProcessAlert(
+          data.process.pm_id,
+          data.process.name
+        );
+
+        if (alertCheck.shouldAlert) {
+          console.warn(`⚠️  ALERT: Process ${data.process.name} has crashed ${alertCheck.crashCount} times in ${alertCheck.timeWindow} minutes (threshold: ${alertCheck.threshold})`);
+        }
       } catch (error) {
         console.error('Error logging crash:', error);
       }

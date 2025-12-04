@@ -46,6 +46,17 @@ export const translations = {
     'metrics.memory': 'Mémoire (MB)',
     'metrics.time': 'Temps',
 
+    // Alerts
+    'alerts.unstableProcess': 'Processus instable',
+    'alerts.crashes': 'crashs',
+    'alerts.in': 'en',
+    'alerts.minutes': 'minutes',
+    'alerts.threshold': 'seuil',
+    'alerts.new': 'Nouveau',
+    'alerts.dismiss': 'Ignorer',
+    'alerts.dismissed': 'Alerte ignorée',
+    'alerts.dismissError': 'Erreur lors de l\'ignorage de l\'alerte',
+
     // Process Status
     'status.online': 'En ligne',
     'status.stopped': 'Arrêté',
@@ -305,6 +316,17 @@ export const translations = {
     'metrics.memory': 'Memory (MB)',
     'metrics.time': 'Time',
     'metrics.minutes': 'minutes',
+
+    // Alerts
+    'alerts.unstableProcess': 'Unstable Process',
+    'alerts.crashes': 'crashes',
+    'alerts.in': 'in',
+    'alerts.minutes': 'minutes',
+    'alerts.threshold': 'threshold',
+    'alerts.new': 'New',
+    'alerts.dismiss': 'Dismiss',
+    'alerts.dismissed': 'Alert dismissed',
+    'alerts.dismissError': 'Error dismissing alert',
 
     // History
     'history.title': 'History',
