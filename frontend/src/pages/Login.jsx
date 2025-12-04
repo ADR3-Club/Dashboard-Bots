@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Languages } from 'lucide-react';
 import useAuthStore from '../stores/authStore';
 import useThemeStore from '../stores/themeStore';
 import useLocaleStore from '../stores/localeStore';
@@ -12,7 +12,7 @@ export default function Login() {
 
   const { login, error, clearError, isAuthenticated } = useAuthStore();
   const { initTheme } = useThemeStore();
-  const { t } = useLocaleStore();
+  const { locale, toggleLocale, t } = useLocaleStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +40,22 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 relative">
+      {/* Language selector - Top right */}
+      <div className="absolute top-4 right-4">
+        <button
+          onClick={toggleLocale}
+          className="px-3 py-1.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-1.5"
+          aria-label="Toggle language"
+          title={locale === 'fr' ? 'Switch to English' : 'Passer en français'}
+        >
+          <Languages className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase">
+            {locale}
+          </span>
+        </button>
+      </div>
+
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-8">
