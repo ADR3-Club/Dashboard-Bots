@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Moon, Sun, LogOut, Key, Languages } from 'lucide-react';
+import { Moon, Sun, LogOut, Key, Languages, LayoutDashboard, Clock } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useThemeStore from '../../stores/themeStore';
 import useAuthStore from '../../stores/authStore';
 import useLocaleStore from '../../stores/localeStore';
@@ -7,6 +8,8 @@ import ChangePasswordModal from '../auth/ChangePasswordModal';
 import ConfirmDialog from '../common/ConfirmDialog';
 
 export default function Header() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
   const { locale, toggleLocale, t } = useLocaleStore();
@@ -16,6 +19,8 @@ export default function Header() {
   const handleLogout = () => {
     logout();
   };
+
+  const isActive = (path) => location.pathname === path;
 
   return (
     <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
@@ -29,6 +34,32 @@ export default function Header() {
                 {t('header.title')}
               </h1>
             </div>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                isActive('/dashboard') || isActive('/')
+                  ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+            >
+              <LayoutDashboard className="w-5 h-5" />
+              <span className="hidden md:inline">{t('dashboard.title')}</span>
+            </button>
+            <button
+              onClick={() => navigate('/history')}
+              className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                isActive('/history')
+                  ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+            >
+              <Clock className="w-5 h-5" />
+              <span className="hidden md:inline">{t('history.title')}</span>
+            </button>
           </div>
 
           {/* Right side - User info, theme toggle, logout */}
