@@ -89,7 +89,7 @@ function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
         <StatusBadge status={process.pm2_env?.status || process.status} />
       </td>
       <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-        {formatUptime(process.pm2_env?.pm_uptime || process.uptime)}
+        {isOnline ? formatUptime(process.pm2_env?.pm_uptime || process.uptime) : '-'}
       </td>
       <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
         {formatCPU(process.monit?.cpu || process.cpu)}

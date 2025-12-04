@@ -92,7 +92,7 @@ function ProcessCard({ process, onViewLogs }) {
               {t('table.uptime')}
             </p>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {formatUptime(process.pm2_env?.pm_uptime || process.uptime)}
+              {isOnline ? formatUptime(process.pm2_env?.pm_uptime || process.uptime) : '-'}
             </p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
