@@ -181,6 +181,21 @@ export const settingsAPI = {
     api.put('/settings/cleanup', settings),
 };
 
+// Users API (admin only)
+export const usersAPI = {
+  getAll: () =>
+    api.get('/users'),
+
+  create: (userData) =>
+    api.post('/users', userData),
+
+  update: (id, userData) =>
+    api.put(`/users/${id}`, userData),
+
+  delete: (id) =>
+    api.delete(`/users/${id}`),
+};
+
 // Health check
 export const healthAPI = {
   check: () =>

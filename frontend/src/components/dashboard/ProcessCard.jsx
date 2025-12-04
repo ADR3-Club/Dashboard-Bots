@@ -5,10 +5,12 @@ import { useRestartProcess, useStopProcess, useStartProcess } from '../../hooks/
 import { useState, memo } from 'react';
 import ConfirmDialog from '../common/ConfirmDialog';
 import useLocaleStore from '../../stores/localeStore';
+import useAuthStore from '../../stores/authStore';
 import useToast from '../../hooks/useToast';
 
 function ProcessCard({ process, onViewLogs }) {
   const { t } = useLocaleStore();
+  const { isAdmin } = useAuthStore();
   const toast = useToast();
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: null });
@@ -128,41 +130,46 @@ function ProcessCard({ process, onViewLogs }) {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => openConfirmDialog('restart')}
-            disabled={isActionLoading}
-            className="flex-1 btn btn-sm btn-secondary flex items-center justify-center gap-2"
-            title={t('actions.restart')}
-          >
-            <RefreshCw className={`w-4 h-4 ${isActionLoading ? 'animate-spin' : ''}`} />
-            {t('actions.restart')}
-          </button>
+          {/* Admin-only action buttons */}
+          {isAdmin() && (
+            <>
+              <button
+                onClick={() => openConfirmDialog('restart')}
+                disabled={isActionLoading}
+                className="flex-1 btn btn-sm btn-secondary flex items-center justify-center gap-2"
+                title={t('actions.restart')}
+              >
+                <RefreshCw className={`w-4 h-4 ${isActionLoading ? 'animate-spin' : ''}`} />
+                {t('actions.restart')}
+              </button>
 
-          {isOnline ? (
-            <button
-              onClick={() => openConfirmDialog('stop')}
-              disabled={isActionLoading}
-              className="flex-1 btn btn-sm bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/40 flex items-center justify-center gap-2"
-              title={t('actions.stop')}
-            >
-              <Square className="w-4 h-4" />
-              {t('actions.stop')}
-            </button>
-          ) : (
-            <button
-              onClick={handleStart}
-              disabled={isActionLoading}
-              className="flex-1 btn btn-sm bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/40 flex items-center justify-center gap-2"
-              title={t('actions.start')}
-            >
-              <Play className="w-4 h-4" />
-              {t('actions.start')}
-            </button>
+              {isOnline ? (
+                <button
+                  onClick={() => openConfirmDialog('stop')}
+                  disabled={isActionLoading}
+                  className="flex-1 btn btn-sm bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/40 flex items-center justify-center gap-2"
+                  title={t('actions.stop')}
+                >
+                  <Square className="w-4 h-4" />
+                  {t('actions.stop')}
+                </button>
+              ) : (
+                <button
+                  onClick={handleStart}
+                  disabled={isActionLoading}
+                  className="flex-1 btn btn-sm bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/40 flex items-center justify-center gap-2"
+                  title={t('actions.start')}
+                >
+                  <Play className="w-4 h-4" />
+                  {t('actions.start')}
+                </button>
+              )}
+            </>
           )}
 
           <button
             onClick={() => onViewLogs(process)}
-            className="btn btn-sm bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/40"
+            className={`btn btn-sm bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/40 ${!isAdmin() ? 'flex-1' : ''}`}
             title={t('actions.viewLogs')}
           >
             <FileText className="w-4 h-4" />

@@ -7,11 +7,13 @@ import { useState, memo } from 'react';
 import ConfirmDialog from '../common/ConfirmDialog';
 import MetricsModal from '../metrics/MetricsModal';
 import useLocaleStore from '../../stores/localeStore';
+import useAuthStore from '../../stores/authStore';
 import useToast from '../../hooks/useToast';
 
 function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
   const navigate = useNavigate();
   const { t } = useLocaleStore();
+  const { isAdmin } = useAuthStore();
   const toast = useToast();
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: null });
@@ -117,33 +119,38 @@ function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
       </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => openConfirmDialog('restart')}
-            disabled={isActionLoading}
-            className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors disabled:opacity-50 border border-transparent hover:border-primary-200 dark:hover:border-primary-800"
-            title={t('actions.restart')}
-          >
-            <RefreshCw className={`w-4 h-4 ${isActionLoading ? 'animate-spin' : ''}`} />
-          </button>
+          {/* Admin-only action buttons */}
+          {isAdmin() && (
+            <>
+              <button
+                onClick={() => openConfirmDialog('restart')}
+                disabled={isActionLoading}
+                className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors disabled:opacity-50 border border-transparent hover:border-primary-200 dark:hover:border-primary-800"
+                title={t('actions.restart')}
+              >
+                <RefreshCw className={`w-4 h-4 ${isActionLoading ? 'animate-spin' : ''}`} />
+              </button>
 
-          {isOnline ? (
-            <button
-              onClick={() => openConfirmDialog('stop')}
-              disabled={isActionLoading}
-              className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors disabled:opacity-50 border border-transparent hover:border-red-200 dark:hover:border-red-800"
-              title={t('actions.stop')}
-            >
-              <Square className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              onClick={handleStart}
-              disabled={isActionLoading}
-              className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400 transition-colors disabled:opacity-50 border border-transparent hover:border-green-200 dark:hover:border-green-800"
-              title={t('actions.start')}
-            >
-              <Play className="w-4 h-4" />
-            </button>
+              {isOnline ? (
+                <button
+                  onClick={() => openConfirmDialog('stop')}
+                  disabled={isActionLoading}
+                  className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors disabled:opacity-50 border border-transparent hover:border-red-200 dark:hover:border-red-800"
+                  title={t('actions.stop')}
+                >
+                  <Square className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleStart}
+                  disabled={isActionLoading}
+                  className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400 transition-colors disabled:opacity-50 border border-transparent hover:border-green-200 dark:hover:border-green-800"
+                  title={t('actions.start')}
+                >
+                  <Play className="w-4 h-4" />
+                </button>
+              )}
+            </>
           )}
 
           <button

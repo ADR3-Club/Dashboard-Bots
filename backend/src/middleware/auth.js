@@ -2,6 +2,12 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
+// Role hierarchy: admin > user
+const ROLE_HIERARCHY = {
+  admin: 2,
+  user: 1
+};
+
 /**
  * Middleware to verify JWT token
  */
@@ -27,10 +33,11 @@ function authMiddleware(req, res, next) {
     // Verify token
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    // Attach user info to request
+    // Attach user info to request (including role)
     req.user = {
       id: decoded.id,
-      username: decoded.username
+      username: decoded.username,
+      role: decoded.role || 'user'
     };
 
     next();
@@ -55,12 +62,34 @@ function authMiddleware(req, res, next) {
 }
 
 /**
+ * Middleware to require a minimum role level
+ * @param {string} requiredRole - Minimum role required ('admin', 'user')
+ */
+function requireRole(requiredRole) {
+  return (req, res, next) => {
+    const userRole = req.user?.role || 'user';
+    const userLevel = ROLE_HIERARCHY[userRole] || 0;
+    const requiredLevel = ROLE_HIERARCHY[requiredRole] || 0;
+
+    if (userLevel < requiredLevel) {
+      return res.status(403).json({
+        success: false,
+        error: 'Insufficient permissions'
+      });
+    }
+
+    next();
+  };
+}
+
+/**
  * Generate JWT token
  */
 function generateToken(user) {
   const payload = {
     id: user.id,
-    username: user.username
+    username: user.username,
+    role: user.role || 'user'
   };
 
   const options = {
@@ -83,6 +112,7 @@ function verifyToken(token) {
 
 module.exports = {
   authMiddleware,
+  requireRole,
   generateToken,
   verifyToken
 };

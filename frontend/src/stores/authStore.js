@@ -1,12 +1,15 @@
 import { create } from 'zustand';
 import { authAPI } from '../services/api';
 
-const useAuthStore = create((set) => ({
+const useAuthStore = create((set, get) => ({
   user: JSON.parse(localStorage.getItem('user') || 'null'),
   token: localStorage.getItem('token') || null,
   isAuthenticated: !!localStorage.getItem('token'),
   isLoading: false,
   error: null,
+
+  // Check if current user is admin
+  isAdmin: () => get().user?.role === 'admin',
 
   login: async (username, password) => {
     set({ isLoading: true, error: null });

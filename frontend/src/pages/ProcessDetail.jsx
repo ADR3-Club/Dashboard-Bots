@@ -24,6 +24,7 @@ import LogViewer from '../components/logs/LogViewer';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import { processesAPI } from '../services/api';
 import useLocaleStore from '../stores/localeStore';
+import useAuthStore from '../stores/authStore';
 import useToast from '../hooks/useToast';
 
 // Format uptime
@@ -76,6 +77,7 @@ export default function ProcessDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useLocaleStore();
+  const { isAdmin } = useAuthStore();
   const toast = useToast();
 
   const [showLogs, setShowLogs] = useState(false);
@@ -196,31 +198,36 @@ export default function ProcessDetail() {
             >
               <RefreshCw className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </button>
-            {details.status === 'online' ? (
+            {/* Admin-only action buttons */}
+            {isAdmin() && (
               <>
-                <button
-                  onClick={() => handleAction('restart')}
-                  className="btn btn-secondary flex items-center gap-2"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  {t('actions.restart')}
-                </button>
-                <button
-                  onClick={() => handleAction('stop')}
-                  className="btn bg-red-600 hover:bg-red-700 text-white flex items-center gap-2"
-                >
-                  <Square className="w-4 h-4" />
-                  {t('actions.stop')}
-                </button>
+                {details.status === 'online' ? (
+                  <>
+                    <button
+                      onClick={() => handleAction('restart')}
+                      className="btn btn-secondary flex items-center gap-2"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      {t('actions.restart')}
+                    </button>
+                    <button
+                      onClick={() => handleAction('stop')}
+                      className="btn bg-red-600 hover:bg-red-700 text-white flex items-center gap-2"
+                    >
+                      <Square className="w-4 h-4" />
+                      {t('actions.stop')}
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => handleAction('start')}
+                    className="btn btn-primary flex items-center gap-2"
+                  >
+                    <Play className="w-4 h-4" />
+                    {t('actions.start')}
+                  </button>
+                )}
               </>
-            ) : (
-              <button
-                onClick={() => handleAction('start')}
-                className="btn btn-primary flex items-center gap-2"
-              >
-                <Play className="w-4 h-4" />
-                {t('actions.start')}
-              </button>
             )}
           </div>
         </div>

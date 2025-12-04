@@ -1,18 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Save, TestTube2, Bell, Trash2 } from 'lucide-react';
+import { Save, TestTube2, Bell, Trash2, Users, Plus, Pencil, Trash, X } from 'lucide-react';
 import Layout from '../components/layout/Layout';
 import { useWebhookSettings, useUpdateWebhookSettings, useTestWebhook, useCleanupSettings, useUpdateCleanupSettings } from '../hooks/useSettings';
+import { useUsers, useCreateUser, useUpdateUser, useDeleteUser } from '../hooks/useUsers';
 import useLocaleStore from '../stores/localeStore';
+import useAuthStore from '../stores/authStore';
 import useToast from '../hooks/useToast';
 
 export default function Settings() {
   const { t } = useLocaleStore();
   const toast = useToast();
+  const { isAdmin, user: currentUser } = useAuthStore();
   const { data: settings, isLoading } = useWebhookSettings();
   const { data: cleanupSettings, isLoading: cleanupLoading } = useCleanupSettings();
+  const { data: usersData, isLoading: usersLoading } = useUsers();
   const updateMutation = useUpdateWebhookSettings();
   const updateCleanupMutation = useUpdateCleanupSettings();
   const testMutation = useTestWebhook();
+  const createUserMutation = useCreateUser();
+  const updateUserMutation = useUpdateUser();
+  const deleteUserMutation = useDeleteUser();
 
   const [formData, setFormData] = useState({
     discordEnabled: false,
@@ -25,6 +32,15 @@ export default function Settings() {
 
   const [cleanupData, setCleanupData] = useState({
     retentionDays: 30,
+  });
+
+  // User management state
+  const [showUserForm, setShowUserForm] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [userFormData, setUserFormData] = useState({
+    username: '',
+    password: '',
+    role: 'user',
   });
 
   useEffect(() => {
@@ -65,6 +81,61 @@ export default function Settings() {
       toast.success(t('settings.testSent'));
     } catch (error) {
       toast.error(t('settings.testError'));
+    }
+  };
+
+  // User management handlers
+  const handleUserFormChange = (field, value) => {
+    setUserFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const openAddUserForm = () => {
+    setEditingUser(null);
+    setUserFormData({ username: '', password: '', role: 'user' });
+    setShowUserForm(true);
+  };
+
+  const openEditUserForm = (user) => {
+    setEditingUser(user);
+    setUserFormData({ username: user.username, password: '', role: user.role });
+    setShowUserForm(true);
+  };
+
+  const closeUserForm = () => {
+    setShowUserForm(false);
+    setEditingUser(null);
+    setUserFormData({ username: '', password: '', role: 'user' });
+  };
+
+  const handleSaveUser = async () => {
+    try {
+      if (editingUser) {
+        await updateUserMutation.mutateAsync({
+          id: editingUser.id,
+          data: {
+            username: userFormData.username,
+            password: userFormData.password || undefined,
+            role: userFormData.role,
+          },
+        });
+        toast.success(t('users.updated'));
+      } else {
+        await createUserMutation.mutateAsync(userFormData);
+        toast.success(t('users.created'));
+      }
+      closeUserForm();
+    } catch (error) {
+      toast.error(editingUser ? t('users.updateError') : t('users.createError'));
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm(t('users.confirmDelete'))) return;
+    try {
+      await deleteUserMutation.mutateAsync(userId);
+      toast.success(t('users.deleted'));
+    } catch (error) {
+      toast.error(t('users.deleteError'));
     }
   };
 
@@ -312,6 +383,178 @@ export default function Settings() {
             </button>
           </div>
         </div>
+
+        {/* User Management Card - Admin only */}
+        {isAdmin() && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Users className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {t('users.title')}
+                    </h2>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      {t('users.subtitle')}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={openAddUserForm}
+                  className="btn btn-primary flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('users.addUser')}
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {usersLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
+                </div>
+              ) : usersData?.users?.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200 dark:border-gray-700">
+                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {t('users.username')}
+                        </th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {t('users.role')}
+                        </th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {t('users.actions')}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {usersData.users.map((user) => (
+                        <tr key={user.id} className="border-b border-gray-100 dark:border-gray-700 last:border-0">
+                          <td className="py-3 px-4 text-sm text-gray-900 dark:text-white">
+                            {user.username}
+                            {user.id === currentUser?.id && (
+                              <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                                {t('users.you')}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              user.role === 'admin'
+                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
+                                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                            }`}>
+                              {user.role === 'admin' ? t('users.roleAdmin') : t('users.roleUser')}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => openEditUserForm(user)}
+                                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors"
+                                title={t('users.edit')}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </button>
+                              {user.id !== currentUser?.id && (
+                                <button
+                                  onClick={() => handleDeleteUser(user.id)}
+                                  className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors"
+                                  title={t('users.delete')}
+                                >
+                                  <Trash className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 dark:text-gray-400 py-8">
+                  {t('users.noUsers')}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* User Form Modal */}
+        {showUserForm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {editingUser ? t('users.edit') : t('users.addUser')}
+                </h3>
+                <button
+                  onClick={closeUserForm}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('users.username')}
+                  </label>
+                  <input
+                    type="text"
+                    value={userFormData.username}
+                    onChange={(e) => handleUserFormChange('username', e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {editingUser ? t('users.newPassword') : t('users.password')}
+                  </label>
+                  <input
+                    type="password"
+                    value={userFormData.password}
+                    onChange={(e) => handleUserFormChange('password', e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('users.role')}
+                  </label>
+                  <select
+                    value={userFormData.role}
+                    onChange={(e) => handleUserFormChange('role', e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="user">{t('users.roleUser')}</option>
+                    <option value="admin">{t('users.roleAdmin')}</option>
+                  </select>
+                </div>
+              </div>
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                <button
+                  onClick={closeUserForm}
+                  className="btn btn-secondary"
+                >
+                  {t('users.cancel')}
+                </button>
+                <button
+                  onClick={handleSaveUser}
+                  disabled={createUserMutation.isPending || updateUserMutation.isPending}
+                  className="btn btn-primary"
+                >
+                  {(createUserMutation.isPending || updateUserMutation.isPending) ? '...' : t('users.save')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

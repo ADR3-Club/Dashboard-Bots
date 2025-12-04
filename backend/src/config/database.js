@@ -30,20 +30,29 @@ class Database {
   }
 
   async initialize() {
-    const migrationPath = path.join(__dirname, '../../migrations/001_initial.sql');
-    const schema = fs.readFileSync(migrationPath, 'utf8');
+    const migrationsDir = path.join(__dirname, '../../migrations');
+    const migrationFiles = fs.readdirSync(migrationsDir)
+      .filter(f => f.endsWith('.sql'))
+      .sort();
 
-    return new Promise((resolve, reject) => {
-      this.db.exec(schema, (err) => {
-        if (err) {
-          console.error('Error initializing database:', err.message);
-          reject(err);
-        } else {
-          console.log('Database schema initialized');
+    for (const file of migrationFiles) {
+      const migrationPath = path.join(migrationsDir, file);
+      const schema = fs.readFileSync(migrationPath, 'utf8');
+
+      await new Promise((resolve) => {
+        this.db.exec(schema, (err) => {
+          if (err) {
+            // Ignore "duplicate column" errors from re-running migrations
+            if (!err.message.includes('duplicate column')) {
+              console.error(`Migration ${file}:`, err.message);
+            }
+          }
           resolve();
-        }
+        });
       });
-    });
+    }
+
+    console.log('Database migrations completed');
   }
 
   query(sql, params = []) {

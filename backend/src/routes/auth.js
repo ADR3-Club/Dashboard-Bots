@@ -47,10 +47,11 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Generate token
+    // Generate token (including role)
     const token = generateToken({
       id: user.id,
-      username: user.username
+      username: user.username,
+      role: user.role || 'user'
     });
 
     // Return success
@@ -60,6 +61,7 @@ router.post('/login', async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
+        role: user.role || 'user',
         created_at: user.created_at
       }
     });
@@ -102,7 +104,7 @@ router.post('/logout', authMiddleware, (req, res) => {
 router.get('/me', authMiddleware, async (req, res) => {
   try {
     const user = await database.get(
-      'SELECT id, username, created_at FROM users WHERE id = ?',
+      'SELECT id, username, role, created_at FROM users WHERE id = ?',
       [req.user.id]
     );
 
@@ -115,7 +117,10 @@ router.get('/me', authMiddleware, async (req, res) => {
 
     res.json({
       success: true,
-      user
+      user: {
+        ...user,
+        role: user.role || 'user'
+      }
     });
 
   } catch (error) {

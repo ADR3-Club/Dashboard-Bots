@@ -1,13 +1,16 @@
 import { RefreshCw, Square, X, CheckCircle } from 'lucide-react';
 import useLocaleStore from '../../stores/localeStore';
+import useAuthStore from '../../stores/authStore';
 import { useState } from 'react';
 import ConfirmDialog from '../common/ConfirmDialog';
 
 export default function BulkActionBar({ selectedIds, onClearSelection, onBulkRestart, onBulkStop }) {
   const { t } = useLocaleStore();
+  const { isAdmin } = useAuthStore();
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: null });
 
-  if (selectedIds.length === 0) return null;
+  // Hide bulk actions for non-admin users
+  if (selectedIds.length === 0 || !isAdmin()) return null;
 
   const openConfirmDialog = (action) => {
     setConfirmDialog({ isOpen: true, action });
