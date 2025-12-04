@@ -1,0 +1,116 @@
+import { RefreshCw, FileText, Square, Play } from 'lucide-react';
+import StatusBadge from './StatusBadge';
+import { formatUptime, formatMemory, formatCPU } from '../../utils/formatters';
+import { useRestartProcess, useStopProcess, useStartProcess } from '../../hooks/useProcesses';
+import { useState } from 'react';
+
+export default function ProcessRow({ process, onViewLogs }) {
+  const [isActionLoading, setIsActionLoading] = useState(false);
+
+  const restartMutation = useRestartProcess();
+  const stopMutation = useStopProcess();
+  const startMutation = useStartProcess();
+
+  const handleRestart = async () => {
+    if (!confirm(`Restart ${process.name}?`)) return;
+
+    setIsActionLoading(true);
+    try {
+      await restartMutation.mutateAsync(process.pm_id);
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleStop = async () => {
+    if (!confirm(`Stop ${process.name}?`)) return;
+
+    setIsActionLoading(true);
+    try {
+      await stopMutation.mutateAsync(process.pm_id);
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleStart = async () => {
+    setIsActionLoading(true);
+    try {
+      await startMutation.mutateAsync(process.pm_id);
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const isOnline = process.status === 'online';
+
+  return (
+    <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+      <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+        {process.pm_id}
+      </td>
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
+            {process.name}
+          </span>
+        </div>
+      </td>
+      <td className="px-4 py-3">
+        <StatusBadge status={process.status} />
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+        {formatUptime(process.uptime)}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+        {formatCPU(process.cpu)}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+        {formatMemory(process.memory)}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+        {process.restarts}
+      </td>
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRestart}
+            disabled={isActionLoading}
+            className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-colors disabled:opacity-50"
+            title="Restart"
+          >
+            <RefreshCw className={`w-4 h-4 ${isActionLoading ? 'animate-spin' : ''}`} />
+          </button>
+
+          {isOnline ? (
+            <button
+              onClick={handleStop}
+              disabled={isActionLoading}
+              className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors disabled:opacity-50"
+              title="Stop"
+            >
+              <Square className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              onClick={handleStart}
+              disabled={isActionLoading}
+              className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400 transition-colors disabled:opacity-50"
+              title="Start"
+            >
+              <Play className="w-4 h-4" />
+            </button>
+          )}
+
+          <button
+            onClick={() => onViewLogs(process)}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+            title="View logs"
+          >
+            <FileText className="w-4 h-4" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+}
