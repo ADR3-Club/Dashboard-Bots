@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import History from './pages/History';
+import Settings from './pages/Settings';
 import useAuthStore from './stores/authStore';
 import useThemeStore from './stores/themeStore';
 import useSessionTimeout from './hooks/useSessionTimeout';
@@ -60,6 +61,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <History />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
               </ProtectedRoute>
             }
           />

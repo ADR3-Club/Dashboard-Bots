@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Moon, Sun, LogOut, Key, Languages, LayoutDashboard, Clock } from 'lucide-react';
+import { Moon, Sun, LogOut, Key, Languages, LayoutDashboard, Clock, Settings as SettingsIcon } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useThemeStore from '../../stores/themeStore';
 import useAuthStore from '../../stores/authStore';
@@ -59,6 +59,17 @@ export default function Header() {
             >
               <Clock className="w-5 h-5" />
               <span className="hidden md:inline">{t('history.title')}</span>
+            </button>
+            <button
+              onClick={() => navigate('/settings')}
+              className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                isActive('/settings')
+                  ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+            >
+              <SettingsIcon className="w-5 h-5" />
+              <span className="hidden md:inline">{t('settings.title')}</span>
             </button>
           </div>
 

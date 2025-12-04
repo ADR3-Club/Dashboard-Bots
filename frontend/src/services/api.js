@@ -160,6 +160,18 @@ export const alertsAPI = {
     api.get(`/alerts/check/${pmId}`, { params: { processName } }),
 };
 
+// Settings API
+export const settingsAPI = {
+  getWebhooks: () =>
+    api.get('/settings/webhooks'),
+
+  updateWebhooks: (settings) =>
+    api.put('/settings/webhooks', settings),
+
+  testWebhook: (type) =>
+    api.post('/settings/webhooks/test', { type }),
+};
+
 // Health check
 export const healthAPI = {
   check: () =>
