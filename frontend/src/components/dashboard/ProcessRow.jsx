@@ -5,9 +5,11 @@ import { useRestartProcess, useStopProcess, useStartProcess } from '../../hooks/
 import { useState, memo } from 'react';
 import ConfirmDialog from '../common/ConfirmDialog';
 import useLocaleStore from '../../stores/localeStore';
+import useToast from '../../hooks/useToast';
 
 function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
   const { t } = useLocaleStore();
+  const toast = useToast();
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: null });
 
@@ -22,6 +24,9 @@ function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
     setIsActionLoading(true);
     try {
       await restartMutation.mutateAsync(process.pm_id);
+      toast.success(`${process.name} redémarré`);
+    } catch (error) {
+      toast.error(`Erreur lors du redémarrage de ${process.name}`);
     } finally {
       setIsActionLoading(false);
     }
@@ -31,6 +36,9 @@ function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
     setIsActionLoading(true);
     try {
       await stopMutation.mutateAsync(process.pm_id);
+      toast.success(`${process.name} arrêté`);
+    } catch (error) {
+      toast.error(`Erreur lors de l'arrêt de ${process.name}`);
     } finally {
       setIsActionLoading(false);
     }
@@ -40,6 +48,9 @@ function ProcessRow({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
     setIsActionLoading(true);
     try {
       await startMutation.mutateAsync(process.pm_id);
+      toast.success(`${process.name} démarré`);
+    } catch (error) {
+      toast.error(`Erreur lors du démarrage de ${process.name}`);
     } finally {
       setIsActionLoading(false);
     }

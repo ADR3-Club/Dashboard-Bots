@@ -5,9 +5,11 @@ import { useRestartProcess, useStopProcess, useStartProcess } from '../../hooks/
 import { useState, memo } from 'react';
 import ConfirmDialog from '../common/ConfirmDialog';
 import useLocaleStore from '../../stores/localeStore';
+import useToast from '../../hooks/useToast';
 
 function ProcessCard({ process, onViewLogs }) {
   const { t } = useLocaleStore();
+  const toast = useToast();
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: null });
 
@@ -38,8 +40,9 @@ function ProcessCard({ process, onViewLogs }) {
     setIsActionLoading(true);
     try {
       await restartMutation.mutateAsync(process.pm_id);
+      toast.success(`${process.name} redémarré`);
     } catch (error) {
-      console.error('Restart error:', error);
+      toast.error(`Erreur lors du redémarrage de ${process.name}`);
     } finally {
       setIsActionLoading(false);
     }
@@ -49,8 +52,9 @@ function ProcessCard({ process, onViewLogs }) {
     setIsActionLoading(true);
     try {
       await stopMutation.mutateAsync(process.pm_id);
+      toast.success(`${process.name} arrêté`);
     } catch (error) {
-      console.error('Stop error:', error);
+      toast.error(`Erreur lors de l'arrêt de ${process.name}`);
     } finally {
       setIsActionLoading(false);
     }
@@ -60,8 +64,9 @@ function ProcessCard({ process, onViewLogs }) {
     setIsActionLoading(true);
     try {
       await startMutation.mutateAsync(process.pm_id);
+      toast.success(`${process.name} démarré`);
     } catch (error) {
-      console.error('Start error:', error);
+      toast.error(`Erreur lors du démarrage de ${process.name}`);
     } finally {
       setIsActionLoading(false);
     }
