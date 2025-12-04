@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 import useAuthStore from '../stores/authStore';
 import useThemeStore from '../stores/themeStore';
+import useLocaleStore from '../stores/localeStore';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -11,6 +12,7 @@ export default function Login() {
 
   const { login, error, clearError, isAuthenticated } = useAuthStore();
   const { initTheme } = useThemeStore();
+  const { t } = useLocaleStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,7 +48,7 @@ export default function Login() {
             <img src="/NewLogo.png" alt="ADR3Club Logo" className="w-32 h-32 object-contain" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            ADR3Club Bot Dashboard
+            {t('header.title')}
           </h1>
         </div>
 
@@ -67,7 +69,7 @@ export default function Login() {
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
               >
-                Username
+                {t('login.username')}
               </label>
               <input
                 id="username"
@@ -78,7 +80,7 @@ export default function Login() {
                 autoFocus
                 disabled={isSubmitting}
                 className="input"
-                placeholder="Enter your username"
+                placeholder={t('login.username')}
               />
             </div>
 
@@ -88,7 +90,7 @@ export default function Login() {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
               >
-                Password
+                {t('login.password')}
               </label>
               <input
                 id="password"
@@ -98,7 +100,7 @@ export default function Login() {
                 required
                 disabled={isSubmitting}
                 className="input"
-                placeholder="Enter your password"
+                placeholder={t('login.password')}
               />
             </div>
 
@@ -108,14 +110,14 @@ export default function Login() {
               disabled={isSubmitting}
               className="w-full btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Signing in...' : 'Sign In'}
+              {isSubmitting ? t('login.signingIn') : t('login.signIn')}
             </button>
           </form>
         </div>
 
         {/* Footer */}
         <p className="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
-          Powered by ADR3Club
+          {t('login.poweredBy')}
         </p>
       </div>
     </div>

@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { Moon, Sun, LogOut, Key } from 'lucide-react';
+import { Moon, Sun, LogOut, Key, Languages } from 'lucide-react';
 import useThemeStore from '../../stores/themeStore';
 import useAuthStore from '../../stores/authStore';
+import useLocaleStore from '../../stores/localeStore';
 import ChangePasswordModal from '../auth/ChangePasswordModal';
 import ConfirmDialog from '../common/ConfirmDialog';
 
 export default function Header() {
   const { theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
+  const { locale, toggleLocale, t } = useLocaleStore();
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -24,7 +26,7 @@ export default function Header() {
             <img src="/NewLogo.png" alt="ADR3Club Logo" className="w-10 h-10 object-contain" />
             <div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                ADR3Club Bot Dashboard
+                {t('header.title')}
               </h1>
             </div>
           </div>
@@ -38,10 +40,23 @@ export default function Header() {
                   {user.username}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Administrator
+                  {t('header.administrator')}
                 </p>
               </div>
             )}
+
+            {/* Language toggle */}
+            <button
+              onClick={toggleLocale}
+              className="px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-1.5"
+              aria-label="Toggle language"
+              title={locale === 'fr' ? 'Switch to English' : 'Passer en français'}
+            >
+              <Languages className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-300 uppercase">
+                {locale}
+              </span>
+            </button>
 
             {/* Theme toggle */}
             <button
@@ -60,8 +75,8 @@ export default function Header() {
             <button
               onClick={() => setShowChangePassword(true)}
               className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors"
-              aria-label="Change password"
-              title="Change password"
+              aria-label={t('header.changePassword')}
+              title={t('header.changePassword')}
             >
               <Key className="w-5 h-5" />
             </button>
@@ -70,7 +85,7 @@ export default function Header() {
             <button
               onClick={() => setShowLogoutConfirm(true)}
               className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors"
-              aria-label="Logout"
+              aria-label={t('header.logout')}
             >
               <LogOut className="w-5 h-5" />
             </button>
@@ -88,10 +103,10 @@ export default function Header() {
         isOpen={showLogoutConfirm}
         onClose={() => setShowLogoutConfirm(false)}
         onConfirm={handleLogout}
-        title="Logout"
-        message="Are you sure you want to logout?"
-        confirmText="Logout"
-        cancelText="Cancel"
+        title={t('confirm.logout.title')}
+        message={t('confirm.logout.message')}
+        confirmText={t('confirm.logout.button')}
+        cancelText={t('confirm.cancel')}
         type="warning"
       />
     </header>

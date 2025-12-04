@@ -2,9 +2,11 @@ import { useState } from 'react';
 import Layout from '../components/layout/Layout';
 import ProcessTable from '../components/dashboard/ProcessTable';
 import LogViewer from '../components/logs/LogViewer';
+import useLocaleStore from '../stores/localeStore';
 
 export default function Dashboard() {
   const [selectedProcess, setSelectedProcess] = useState(null);
+  const { t } = useLocaleStore();
 
   const handleViewLogs = (process) => {
     setSelectedProcess(process);
@@ -20,10 +22,10 @@ export default function Dashboard() {
         {/* Page title */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Dashboard
+            {t('dashboard.title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Monitor and manage your PM2 processes
+            {t('dashboard.subtitle')}
           </p>
         </div>
 

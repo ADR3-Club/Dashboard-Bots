@@ -5,6 +5,9 @@ const { generateToken, authMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Generate a unique server ID at startup
+const SERVER_ID = `server-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
 /**
  * POST /api/auth/login
  * Login with username and password
@@ -122,6 +125,17 @@ router.get('/me', authMiddleware, async (req, res) => {
       error: 'Internal server error'
     });
   }
+});
+
+/**
+ * GET /api/auth/server-id
+ * Get server instance ID (for detecting restarts)
+ */
+router.get('/server-id', authMiddleware, (req, res) => {
+  res.json({
+    success: true,
+    serverId: SERVER_ID
+  });
 });
 
 /**

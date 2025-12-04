@@ -5,6 +5,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import useAuthStore from './stores/authStore';
 import useThemeStore from './stores/themeStore';
+import useSessionTimeout from './hooks/useSessionTimeout';
+import useServerRestart from './hooks/useServerRestart';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -29,6 +31,10 @@ function ProtectedRoute({ children }) {
 
 function App() {
   const { initTheme } = useThemeStore();
+
+  // Session management hooks
+  useSessionTimeout();
+  useServerRestart();
 
   useEffect(() => {
     initTheme();
