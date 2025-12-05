@@ -208,8 +208,8 @@ nano .env  # Configurer pour production
 # Initialiser la DB
 npm run init-db
 
-# Changer le mot de passe admin
-npm run change-password admin VotreMotDePasseSecure123
+# Changer le mot de passe admin (via l'interface ou recréer l'utilisateur)
+npm run create-user admin VotreMotDePasseSecure123
 ```
 
 ### 3. Démarrer avec PM2
@@ -285,7 +285,7 @@ sudo certbot --nginx -d your-domain.com
 ### Historique
 | Méthode | Endpoint | Description |
 |---------|----------|-------------|
-| GET | `/api/history` | Timeline des événements |
+| GET | `/api/history/timeline` | Timeline des événements |
 | GET | `/api/history/statistics` | Statistiques |
 | DELETE | `/api/history/clean?days=30` | Nettoyer ancien historique |
 
@@ -333,9 +333,11 @@ JWT_EXPIRATION=24h
 DB_PATH=./database.sqlite
 
 # Redis (pour métriques 24h)
+REDIS_ENABLED=true
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=
+REDIS_DB=0
 
 # CORS
 CORS_ORIGIN=https://your-domain.com
@@ -385,7 +387,7 @@ module.exports = {
 npm start          # Démarrer en production
 npm run dev        # Démarrer avec hot reload
 npm run init-db    # Initialiser la base de données
-npm run change-password <user> <password>  # Changer mot de passe
+npm run create-user <user> <password>  # Créer/modifier utilisateur
 ```
 
 ### Frontend
