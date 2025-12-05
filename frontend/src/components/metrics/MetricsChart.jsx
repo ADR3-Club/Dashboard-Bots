@@ -124,9 +124,10 @@ function MetricsChart({ metrics, processName = 'process' }) {
         position: 'top',
         labels: {
           usePointStyle: true,
-          padding: 15,
+          padding: 10,
+          boxWidth: 8,
           font: {
-            size: 12,
+            size: 11,
           },
         },
       },
@@ -153,13 +154,15 @@ function MetricsChart({ metrics, processName = 'process' }) {
       x: {
         display: true,
         title: {
-          display: true,
-          text: t('metrics.time'),
+          display: false, // Hide on mobile, takes too much space
         },
         ticks: {
           maxRotation: 45,
           minRotation: 45,
-          maxTicksLimit: 10,
+          maxTicksLimit: 6,
+          font: {
+            size: 10,
+          },
         },
       },
       y: {
@@ -167,15 +170,18 @@ function MetricsChart({ metrics, processName = 'process' }) {
         display: true,
         position: 'left',
         title: {
-          display: true,
-          text: filter === 'memory' ? t('metrics.memory') : t('metrics.cpu'),
+          display: false, // Hide to save space on mobile
         },
         min: 0,
         max: filter === 'memory' ? maxMemory : maxCpu,
         ticks: {
           callback: function (value) {
-            return filter === 'memory' ? value.toFixed(0) + ' MB' : value + '%';
+            return filter === 'memory' ? value.toFixed(0) : value + '%';
           },
+          font: {
+            size: 10,
+          },
+          maxTicksLimit: 5,
         },
         grid: {
           drawOnChartArea: true,
@@ -187,15 +193,18 @@ function MetricsChart({ metrics, processName = 'process' }) {
           display: true,
           position: 'right',
           title: {
-            display: true,
-            text: t('metrics.memory'),
+            display: false, // Hide to save space on mobile
           },
           min: 0,
           max: maxMemory,
           ticks: {
             callback: function (value) {
-              return value.toFixed(0) + ' MB';
+              return value.toFixed(0);
             },
+            font: {
+              size: 10,
+            },
+            maxTicksLimit: 5,
           },
           grid: {
             drawOnChartArea: false,
@@ -214,13 +223,13 @@ function MetricsChart({ metrics, processName = 'process' }) {
   return (
     <div>
       {/* Filter buttons and export */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex gap-2">
+      <div className="flex items-center justify-between mb-3 gap-2">
+        <div className="flex gap-1">
           {filterButtons.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setFilter(key)}
-              className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+              className={`px-2 md:px-3 py-1 text-xs md:text-sm font-medium rounded-lg transition-colors ${
                 filter === key
                   ? 'bg-primary-600 text-white'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -232,11 +241,11 @@ function MetricsChart({ metrics, processName = 'process' }) {
         </div>
         <button
           onClick={exportToCSV}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 text-xs md:text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           title={t('metrics.export')}
         >
-          <Download className="w-4 h-4" />
-          CSV
+          <Download className="w-3.5 h-3.5 md:w-4 md:h-4" />
+          <span className="hidden sm:inline">CSV</span>
         </button>
       </div>
 

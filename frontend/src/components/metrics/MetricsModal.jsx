@@ -54,41 +54,41 @@ export default function MetricsModal({ process, onClose }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        <div className="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-start justify-between mb-3">
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white truncate pr-2">
               {process.name}
             </h2>
-            <div className="flex items-center gap-3 mt-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400">{t('metrics.timeRange')}:</span>
-              <div className="flex gap-1">
-                {RANGE_OPTIONS.map(({ value, label }) => (
-                  <button
-                    key={value}
-                    onClick={() => setRange(value)}
-                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
-                      range === value
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
+            <button
+              onClick={onClose}
+              className="p-2 -mr-2 -mt-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">{t('metrics.timeRange')}:</span>
+            <div className="flex gap-1">
+              {RANGE_OPTIONS.map(({ value, label }) => (
+                <button
+                  key={value}
+                  onClick={() => setRange(value)}
+                  className={`px-2 md:px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                    range === value
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {isLoading && <SkeletonChart />}
 
           {error && (
@@ -109,12 +109,12 @@ export default function MetricsModal({ process, onClose }) {
                   <MetricsChart metrics={metrics} processName={process.name} />
 
                   {/* Info */}
-                  <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      <strong>{t('metrics.dataPoints')}:</strong> {metrics.length} •{' '}
-                      <strong>{t('metrics.autoRefresh')}:</strong> {range <= 60 ? '5s' : '30s'}
+                  <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
+                    <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 flex flex-wrap gap-x-3 gap-y-1">
+                      <span><strong>{t('metrics.dataPoints')}:</strong> {metrics.length}</span>
+                      <span><strong>{t('metrics.autoRefresh')}:</strong> {range <= 60 ? '5s' : '30s'}</span>
                       {formatDataSpan(metrics) && (
-                        <> • <strong>{t('metrics.dataSpan')}:</strong> {formatDataSpan(metrics)}</>
+                        <span><strong>{t('metrics.dataSpan')}:</strong> {formatDataSpan(metrics)}</span>
                       )}
                     </p>
                   </div>
@@ -125,7 +125,7 @@ export default function MetricsModal({ process, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex justify-end gap-3 p-4 md:p-6 border-t border-gray-200 dark:border-gray-700">
           <button onClick={onClose} className="btn btn-secondary">
             {t('logs.close')}
           </button>
