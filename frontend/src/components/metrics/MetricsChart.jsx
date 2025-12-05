@@ -221,7 +221,7 @@ function MetricsChart({ metrics, processName = 'process' }) {
   ];
 
   return (
-    <div>
+    <div className="w-full overflow-hidden">
       {/* Filter buttons and export */}
       <div className="flex items-center justify-between mb-3 gap-2">
         <div className="flex gap-1">
@@ -250,7 +250,7 @@ function MetricsChart({ metrics, processName = 'process' }) {
       </div>
 
       {/* Chart */}
-      <div className="h-64 md:h-80">
+      <div className="h-64 md:h-80 w-full relative">
         <Line data={data} options={options} />
       </div>
     </div>

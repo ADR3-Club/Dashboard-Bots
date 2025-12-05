@@ -50,7 +50,7 @@ export default function MetricsModal({ process, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col mx-2"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -88,7 +88,7 @@ export default function MetricsModal({ process, onClose }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6">
           {isLoading && <SkeletonChart />}
 
           {error && (
@@ -109,14 +109,14 @@ export default function MetricsModal({ process, onClose }) {
                   <MetricsChart metrics={metrics} processName={process.name} />
 
                   {/* Info */}
-                  <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-                    <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 flex flex-wrap gap-x-3 gap-y-1">
+                  <div className="mt-3 p-2 md:p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg overflow-hidden">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 flex flex-wrap gap-x-2 gap-y-1">
                       <span><strong>{t('metrics.dataPoints')}:</strong> {metrics.length}</span>
                       <span><strong>{t('metrics.autoRefresh')}:</strong> {range <= 60 ? '5s' : '30s'}</span>
                       {formatDataSpan(metrics) && (
                         <span><strong>{t('metrics.dataSpan')}:</strong> {formatDataSpan(metrics)}</span>
                       )}
-                    </p>
+                    </div>
                   </div>
                 </>
               )}
