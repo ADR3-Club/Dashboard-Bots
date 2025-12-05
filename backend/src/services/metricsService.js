@@ -76,34 +76,58 @@ class MetricsService {
   }
 
   /**
+   * Thin out data to target number of points (evenly distributed)
+   */
+  thinOutData(data, targetPoints) {
+    if (!data || data.length <= targetPoints) return data;
+
+    const step = (data.length - 1) / (targetPoints - 1);
+    const result = [];
+
+    for (let i = 0; i < targetPoints; i++) {
+      const index = Math.round(i * step);
+      result.push(data[index]);
+    }
+
+    return result;
+  }
+
+  /**
    * Get historical metrics for a specific process
    * @param {number} pmId - Process ID
    * @param {number} range - Time range in minutes (default: 120 = 2 hours)
    */
   async getProcessMetrics(pmId, range = 120) {
+    // Target points per range for consistent display
+    const targetPoints = {
+      10: 60,    // 10 min -> 60 points
+      60: 90,    // 1h -> 90 points
+      360: 120,  // 6h -> 120 points
+      1440: 100  // 24h -> 100 points
+    };
+    const maxPoints = targetPoints[range] || 100;
+
     // For Redis available, fetch from Redis
     if (redisService.isAvailable()) {
-      // For short ranges (<= 60 min), return raw data (every 10 seconds)
+      // For short ranges (<= 60 min), return raw data then thin out
       if (range <= 60) {
         const rawMetrics = await redisService.getMetrics(pmId, range);
         if (rawMetrics && rawMetrics.length > 0) {
-          return rawMetrics;
+          return this.thinOutData(rawMetrics, maxPoints);
         }
       } else {
         // For longer ranges, aggregate to reduce data points
-        let interval = 1; // 1 minute intervals by default
+        let interval = 3; // 3 minute intervals by default
 
-        if (range >= 1440) {        // 24h -> 5 minute intervals
-          interval = 5;
-        } else if (range >= 360) {  // 6h -> 2 minute intervals
-          interval = 2;
-        } else {                     // 1-6h -> 1 minute intervals
-          interval = 1;
+        if (range >= 1440) {        // 24h -> 15 minute intervals (~100 points)
+          interval = 15;
+        } else if (range >= 360) {  // 6h -> 3 minute intervals (~120 points)
+          interval = 3;
         }
 
         const aggregated = await redisService.getAggregatedMetrics(pmId, range, interval);
         if (aggregated && aggregated.length > 0) {
-          return aggregated;
+          return this.thinOutData(aggregated, maxPoints);
         }
       }
     }
@@ -114,10 +138,11 @@ class MetricsService {
     // Filter by time range if needed
     if (range && buffer.length > 0) {
       const cutoff = Date.now() - (range * 60 * 1000);
-      return buffer.filter(m => m.timestamp >= cutoff);
+      const filtered = buffer.filter(m => m.timestamp >= cutoff);
+      return this.thinOutData(filtered, maxPoints);
     }
 
-    return buffer;
+    return this.thinOutData(buffer, maxPoints);
   }
 
   /**
