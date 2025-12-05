@@ -65,63 +65,68 @@ export default function LogViewer({ process, onClose }) {
       onClick={onClose}
     >
       <div
-        className="card w-full max-w-5xl max-h-[80vh] flex flex-col"
+        className="card w-full max-w-5xl max-h-[85vh] flex flex-col mx-2"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Logs: {process.name}
-            </h2>
-            <div className="flex items-center gap-2 text-sm">
-              {isConnected ? (
-                <div className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
-                  <Wifi className="w-4 h-4" />
-                  <span>Connected</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
-                  <WifiOff className="w-4 h-4" />
-                  <span>Disconnected</span>
-                </div>
-              )}
+        <div className="px-3 md:px-6 py-3 md:py-4 border-b border-gray-200 dark:border-gray-700">
+          {/* Top row: title + status + close */}
+          <div className="flex items-center justify-between mb-2 md:mb-0">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+              <h2 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate">
+                {process.name}
+              </h2>
+              <div className="flex items-center gap-1 text-xs md:text-sm flex-shrink-0">
+                {isConnected ? (
+                  <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                    <Wifi className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    <span className="hidden sm:inline">Connected</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-red-600 dark:text-red-400">
+                    <WifiOff className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    <span className="hidden sm:inline">Disconnected</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+              <button
+                onClick={clearLogs}
+                className="p-1.5 md:p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors"
+                title="Clear logs"
+              >
+                <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
+              </button>
+              <button
+                onClick={handleExport}
+                className="p-1.5 md:p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors"
+                title="Export logs"
+              >
+                <Download className="w-4 h-4 md:w-5 md:h-5" />
+              </button>
+              <button
+                onClick={onClose}
+                className="p-1.5 md:p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+                title="Close"
+              >
+                <X className="w-4 h-4 md:w-5 md:h-5" />
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Search input */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search logs..."
-                className="pl-9 pr-3 py-1.5 w-48 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
-            <button
-              onClick={clearLogs}
-              className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 transition-colors border border-transparent hover:border-red-200 dark:hover:border-red-800"
-              title="Clear logs"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
-            <button
-              onClick={handleExport}
-              className="p-2 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 transition-colors border border-transparent hover:border-primary-200 dark:hover:border-primary-800"
-              title="Export logs"
-            >
-              <Download className="w-5 h-5" />
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors border border-transparent hover:border-gray-300 dark:hover:border-gray-600"
-              title="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
+          {/* Search input - full width on mobile */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search logs..."
+              className="pl-9 pr-3 py-1.5 w-full md:w-64 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
           </div>
         </div>
 
@@ -154,7 +159,7 @@ export default function LogViewer({ process, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+        <div className="px-3 md:px-6 py-2 md:py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between text-xs md:text-sm text-gray-600 dark:text-gray-400">
           <div>
             {searchTerm ? `${filteredLogs.length}/${logs.length}` : logs.length} lines
           </div>

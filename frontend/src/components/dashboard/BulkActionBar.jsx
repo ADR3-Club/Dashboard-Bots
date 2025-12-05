@@ -31,44 +31,43 @@ export default function BulkActionBar({ selectedIds, onClearSelection, onBulkRes
 
   return (
     <>
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 animate-slide-up">
-        <div className="card px-6 py-4 shadow-2xl border-2 border-primary-500 dark:border-primary-600">
-          <div className="flex items-center gap-4">
+      <div className="fixed bottom-4 left-2 right-2 md:left-1/2 md:right-auto md:-translate-x-1/2 z-40 animate-slide-up">
+        <div className="card px-3 md:px-6 py-3 md:py-4 shadow-2xl border-2 border-primary-500 dark:border-primary-600">
+          <div className="flex items-center justify-between md:justify-start gap-2 md:gap-4">
             {/* Selection count */}
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {selectedIds.length} {t('bulk.selected')}
+            <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+              <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-primary-600 dark:text-primary-400" />
+              <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-white whitespace-nowrap">
+                {selectedIds.length}
               </span>
             </div>
 
-            {/* Divider */}
-            <div className="h-8 w-px bg-gray-300 dark:bg-gray-600" />
+            {/* Divider - hidden on mobile */}
+            <div className="hidden md:block h-8 w-px bg-gray-300 dark:bg-gray-600" />
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2">
               <button
                 onClick={() => openConfirmDialog('restart')}
-                className="btn btn-sm bg-primary-600 hover:bg-primary-700 text-white flex items-center gap-2"
+                className="btn btn-sm bg-primary-600 hover:bg-primary-700 text-white flex items-center gap-1 md:gap-2 px-2 md:px-3"
               >
                 <RefreshCw className="w-4 h-4" />
-                {t('bulk.restart')}
+                <span className="hidden sm:inline">{t('bulk.restart')}</span>
               </button>
 
               <button
                 onClick={() => openConfirmDialog('stop')}
-                className="btn btn-sm bg-red-600 hover:bg-red-700 text-white flex items-center gap-2"
+                className="btn btn-sm bg-red-600 hover:bg-red-700 text-white flex items-center gap-1 md:gap-2 px-2 md:px-3"
               >
                 <Square className="w-4 h-4" />
-                {t('bulk.stop')}
+                <span className="hidden sm:inline">{t('bulk.stop')}</span>
               </button>
 
               <button
                 onClick={onClearSelection}
-                className="btn btn-sm btn-secondary flex items-center gap-2"
+                className="btn btn-sm btn-secondary flex items-center gap-1 md:gap-2 px-2 md:px-3"
               >
                 <X className="w-4 h-4" />
-                {t('bulk.clear')}
               </button>
             </div>
           </div>

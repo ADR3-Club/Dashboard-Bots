@@ -1,4 +1,5 @@
-import { RefreshCw, FileText, Square, Play, TrendingUp } from 'lucide-react';
+import { RefreshCw, FileText, Square, Play, TrendingUp, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import StatusBadge from './StatusBadge';
 import { formatUptime, formatMemory, formatCPU } from '../../utils/formatters';
 import { useRestartProcess, useStopProcess, useStartProcess } from '../../hooks/useProcesses';
@@ -10,6 +11,7 @@ import useAuthStore from '../../stores/authStore';
 import useToast from '../../hooks/useToast';
 
 function ProcessCard({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
+  const navigate = useNavigate();
   const { t } = useLocaleStore();
   const { isAdmin } = useAuthStore();
   const toast = useToast();
@@ -194,6 +196,14 @@ function ProcessCard({ process, onViewLogs, selectedIds = [], onToggleSelect }) 
             title={t('actions.viewMetrics')}
           >
             <TrendingUp className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={() => navigate(`/process/${encodeURIComponent(process.name)}`)}
+            className="btn btn-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+            title={t('processDetail.viewDetails')}
+          >
+            <Info className="w-4 h-4" />
           </button>
         </div>
       </div>
