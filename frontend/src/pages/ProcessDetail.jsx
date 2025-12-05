@@ -214,29 +214,30 @@ export default function ProcessDetail() {
     <Layout>
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="space-y-4">
+          {/* Title row */}
+          <div className="flex items-start gap-3">
             <button
               onClick={() => navigate('/dashboard')}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
             >
               <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
             </button>
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white truncate">
                   {details.name}
                 </h1>
                 <StatusBadge status={details.status} />
               </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
                 PM2 ID: {details.pm_id} • PID: {details.pid || '-'}
               </p>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
+          {/* Actions row */}
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => refetch()}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -251,26 +252,26 @@ export default function ProcessDetail() {
                   <>
                     <button
                       onClick={() => handleAction('restart')}
-                      className="btn btn-secondary flex items-center gap-2"
+                      className="btn btn-sm md:btn btn-secondary flex items-center gap-2"
                     >
                       <RotateCcw className="w-4 h-4" />
-                      {t('actions.restart')}
+                      <span className="hidden sm:inline">{t('actions.restart')}</span>
                     </button>
                     <button
                       onClick={() => handleAction('stop')}
-                      className="btn bg-red-600 hover:bg-red-700 text-white flex items-center gap-2"
+                      className="btn btn-sm md:btn bg-red-600 hover:bg-red-700 text-white flex items-center gap-2"
                     >
                       <Square className="w-4 h-4" />
-                      {t('actions.stop')}
+                      <span className="hidden sm:inline">{t('actions.stop')}</span>
                     </button>
                   </>
                 ) : (
                   <button
                     onClick={() => handleAction('start')}
-                    className="btn btn-primary flex items-center gap-2"
+                    className="btn btn-sm md:btn btn-primary flex items-center gap-2"
                   >
                     <Play className="w-4 h-4" />
-                    {t('actions.start')}
+                    <span className="hidden sm:inline">{t('actions.start')}</span>
                   </button>
                 )}
               </>

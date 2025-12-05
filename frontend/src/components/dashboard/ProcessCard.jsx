@@ -144,39 +144,39 @@ function ProcessCard({ process, onViewLogs, selectedIds = [], onToggleSelect }) 
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           {/* Admin-only action buttons */}
           {isAdmin() && (
             <>
               <button
                 onClick={() => openConfirmDialog('restart')}
                 disabled={isActionLoading}
-                className="flex-1 btn btn-sm btn-secondary flex items-center justify-center gap-2"
+                className="flex-1 min-w-0 btn btn-sm btn-secondary flex items-center justify-center gap-1"
                 title={t('actions.restart')}
               >
-                <RefreshCw className={`w-4 h-4 ${isActionLoading ? 'animate-spin' : ''}`} />
-                {t('actions.restart')}
+                <RefreshCw className={`w-3.5 h-3.5 flex-shrink-0 ${isActionLoading ? 'animate-spin' : ''}`} />
+                <span className="truncate">{t('actions.restart')}</span>
               </button>
 
               {isOnline ? (
                 <button
                   onClick={() => openConfirmDialog('stop')}
                   disabled={isActionLoading}
-                  className="flex-1 btn btn-sm bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/40 flex items-center justify-center gap-2"
+                  className="flex-1 min-w-0 btn btn-sm bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/40 flex items-center justify-center gap-1"
                   title={t('actions.stop')}
                 >
-                  <Square className="w-4 h-4" />
-                  {t('actions.stop')}
+                  <Square className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="truncate">{t('actions.stop')}</span>
                 </button>
               ) : (
                 <button
                   onClick={handleStart}
                   disabled={isActionLoading}
-                  className="flex-1 btn btn-sm bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/40 flex items-center justify-center gap-2"
+                  className="flex-1 min-w-0 btn btn-sm bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/40 flex items-center justify-center gap-1"
                   title={t('actions.start')}
                 >
-                  <Play className="w-4 h-4" />
-                  {t('actions.start')}
+                  <Play className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="truncate">{t('actions.start')}</span>
                 </button>
               )}
             </>
@@ -187,7 +187,7 @@ function ProcessCard({ process, onViewLogs, selectedIds = [], onToggleSelect }) 
             className={`btn btn-sm bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/40 ${!isAdmin() ? 'flex-1' : ''}`}
             title={t('actions.viewLogs')}
           >
-            <FileText className="w-4 h-4" />
+            <FileText className="w-3.5 h-3.5" />
           </button>
 
           <button
@@ -195,7 +195,7 @@ function ProcessCard({ process, onViewLogs, selectedIds = [], onToggleSelect }) 
             className="btn btn-sm bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/40"
             title={t('actions.viewMetrics')}
           >
-            <TrendingUp className="w-4 h-4" />
+            <TrendingUp className="w-3.5 h-3.5" />
           </button>
 
           <button
@@ -203,7 +203,7 @@ function ProcessCard({ process, onViewLogs, selectedIds = [], onToggleSelect }) 
             className="btn btn-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
             title={t('processDetail.viewDetails')}
           >
-            <Info className="w-4 h-4" />
+            <Info className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
