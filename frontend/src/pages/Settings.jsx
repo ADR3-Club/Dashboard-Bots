@@ -77,10 +77,12 @@ export default function Settings() {
 
   const handleTest = async (type) => {
     try {
+      // Save settings first so the webhook URL is in the database
+      await updateMutation.mutateAsync(formData);
       await testMutation.mutateAsync(type);
-      toast.success(t('settings.testSent'));
+      toast.success(t('settings.webhooks.testSent'));
     } catch (error) {
-      toast.error(t('settings.testError'));
+      toast.error(t('settings.webhooks.testError'));
     }
   };
 
@@ -325,6 +327,18 @@ export default function Settings() {
                 </div>
               </label>
             </div>
+          </div>
+
+          {/* Footer with Save button */}
+          <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+            <button
+              onClick={handleSave}
+              disabled={updateMutation.isPending || updateCleanupMutation.isPending}
+              className="btn btn-primary flex items-center gap-2"
+            >
+              <Save className="w-4 h-4" />
+              {(updateMutation.isPending || updateCleanupMutation.isPending) ? t('settings.saving') : t('settings.save')}
+            </button>
           </div>
         </div>
 
