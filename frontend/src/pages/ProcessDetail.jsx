@@ -106,6 +106,15 @@ export default function ProcessDetail() {
   const [showLogs, setShowLogs] = useState(false);
   const [showMetrics, setShowMetrics] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [metricsRange, setMetricsRange] = useState(60); // Default 1 hour
+
+  // Time range options
+  const RANGE_OPTIONS = [
+    { value: 10, label: '10 min' },
+    { value: 60, label: '1h' },
+    { value: 360, label: '6h' },
+    { value: 1440, label: '24h' },
+  ];
 
   // Keyboard shortcuts
   useKeyboardShortcuts({
@@ -131,7 +140,7 @@ export default function ProcessDetail() {
   const pmId = data?.details?.pm_id;
 
   // Fetch metrics for chart (only when we have pmId)
-  const { data: metrics, isLoading: metricsLoading } = useProcessMetrics(pmId, 60, showMetrics && pmId !== undefined);
+  const { data: metrics, isLoading: metricsLoading } = useProcessMetrics(pmId, metricsRange, showMetrics && pmId !== undefined);
 
   // Mutations (use pm_id for PM2 API calls)
   const restartMutation = useMutation({
@@ -332,9 +341,26 @@ export default function ProcessDetail() {
         {/* Metrics Chart */}
         {showMetrics && (
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              {t('processDetail.metricsTitle')} - {details.name}
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {t('processDetail.metricsTitle')} - {details.name}
+              </h3>
+              <div className="flex gap-1">
+                {RANGE_OPTIONS.map(({ value, label }) => (
+                  <button
+                    key={value}
+                    onClick={() => setMetricsRange(value)}
+                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                      metricsRange === value
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
             {metricsLoading ? (
               <SkeletonChart />
             ) : (
@@ -343,7 +369,7 @@ export default function ProcessDetail() {
                 {metrics && metrics.length > 0 && (
                   <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg text-sm text-gray-600 dark:text-gray-400">
                     <strong>{t('processDetail.dataPoints')}:</strong> {metrics.length} •
-                    <strong> {t('processDetail.autoRefresh')}:</strong> 5s
+                    <strong> {t('processDetail.autoRefresh')}:</strong> {metricsRange <= 60 ? '5s' : '30s'}
                     {formatDataSpan(metrics) && (
                       <> • <strong>{t('metrics.dataSpan')}:</strong> {formatDataSpan(metrics)}</>
                     )}
