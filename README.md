@@ -208,8 +208,7 @@ nano .env  # Configurer pour production
 # Initialiser la DB
 npm run init-db
 
-# Changer le mot de passe admin (via l'interface ou recréer l'utilisateur)
-npm run create-user admin VotreMotDePasseSecure123
+# Changer le mot de passe admin via l'interface web (Settings > Gestion utilisateurs)
 ```
 
 ### 3. Démarrer avec PM2
@@ -258,7 +257,7 @@ sudo certbot --nginx -d your-domain.com
 | POST | `/api/auth/login` | Connexion |
 | POST | `/api/auth/verify` | Vérifier token |
 | GET | `/api/auth/me` | Info utilisateur actuel |
-| POST | `/api/auth/change-password` | Changer mot de passe |
+| PUT | `/api/auth/change-password` | Changer mot de passe |
 
 ### Processus
 | Méthode | Endpoint | Description |
@@ -387,7 +386,7 @@ module.exports = {
 npm start          # Démarrer en production
 npm run dev        # Démarrer avec hot reload
 npm run init-db    # Initialiser la base de données
-npm run create-user <user> <password>  # Créer/modifier utilisateur
+npm run create-user <user> <password>  # Créer un nouvel utilisateur
 ```
 
 ### Frontend
