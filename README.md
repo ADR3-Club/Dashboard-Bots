@@ -10,7 +10,7 @@
 
 **Dashboard web moderne pour gérer et monitorer vos processus PM2 en temps réel.**
 
-[Features](#-features) • [Installation](#-installation) • [Déploiement](#-déploiement) • [API](#-api-endpoints) • [Configuration](#%EF%B8%8F-configuration)
+[Features](#features) • [Installation](#installation) • [Déploiement](#déploiement) • [API](#api-endpoints) • [Configuration](#configuration)
 
 </div>
 
