@@ -98,14 +98,8 @@ class MetricsService {
    * @param {number} range - Time range in minutes (default: 120 = 2 hours)
    */
   async getProcessMetrics(pmId, range = 120) {
-    // Target points per range for consistent display
-    const targetPoints = {
-      10: 60,    // 10 min -> 60 points
-      60: 90,    // 1h -> 90 points
-      360: 120,  // 6h -> 120 points
-      1440: 100  // 24h -> 100 points
-    };
-    const maxPoints = targetPoints[range] || 100;
+    // Limit to 60 points for all ranges
+    const maxPoints = 60;
 
     // For Redis available, fetch from Redis
     if (redisService.isAvailable()) {
