@@ -63,12 +63,18 @@ export default function Settings() {
     setCleanupData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = async () => {
+  const handleSaveWebhooks = async () => {
     try {
-      await Promise.all([
-        updateMutation.mutateAsync(formData),
-        updateCleanupMutation.mutateAsync(cleanupData),
-      ]);
+      await updateMutation.mutateAsync(formData);
+      toast.success(t('settings.saved'));
+    } catch (error) {
+      toast.error(t('settings.saveError'));
+    }
+  };
+
+  const handleSaveCleanup = async () => {
+    try {
+      await updateCleanupMutation.mutateAsync(cleanupData);
       toast.success(t('settings.saved'));
     } catch (error) {
       toast.error(t('settings.saveError'));
@@ -332,12 +338,12 @@ export default function Settings() {
           {/* Footer with Save button */}
           <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
             <button
-              onClick={handleSave}
-              disabled={updateMutation.isPending || updateCleanupMutation.isPending}
+              onClick={handleSaveWebhooks}
+              disabled={updateMutation.isPending}
               className="btn btn-primary flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
-              {(updateMutation.isPending || updateCleanupMutation.isPending) ? t('settings.saving') : t('settings.save')}
+              {updateMutation.isPending ? t('settings.saving') : t('settings.save')}
             </button>
           </div>
         </div>
@@ -388,12 +394,12 @@ export default function Settings() {
           {/* Footer */}
           <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
             <button
-              onClick={handleSave}
-              disabled={updateMutation.isPending || updateCleanupMutation.isPending}
+              onClick={handleSaveCleanup}
+              disabled={updateCleanupMutation.isPending}
               className="btn btn-primary flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
-              {(updateMutation.isPending || updateCleanupMutation.isPending) ? t('settings.saving') : t('settings.save')}
+              {updateCleanupMutation.isPending ? t('settings.saving') : t('settings.save')}
             </button>
           </div>
         </div>
