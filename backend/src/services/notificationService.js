@@ -297,6 +297,74 @@ class NotificationService {
       return { success: false, reason: error.message };
     }
   }
+
+  /**
+   * Test crash notification (simulated)
+   */
+  async testCrashNotification(type = 'discord') {
+    try {
+      const settings = await this.getWebhookSettings();
+
+      if (!settings.notifyOnCrash) {
+        return { success: false, reason: 'Crash notifications are disabled' };
+      }
+
+      const title = '🔴 [TEST] Process Crashed: example-bot';
+      const description = 'Process **example-bot** (ID: 0) has crashed.\n\n*This is a test notification.*';
+      const fields = [
+        { name: 'Process Name', value: 'example-bot', inline: true },
+        { name: 'PM2 ID', value: '0', inline: true },
+        { name: 'Exit Code', value: '1', inline: true },
+      ];
+
+      if (type === 'discord' && settings.discordEnabled) {
+        return await this.sendDiscordNotification(title, description, 0xef4444, fields);
+      } else if (type === 'slack' && settings.slackEnabled) {
+        return await this.sendSlackNotification(`${title}\n${description}\nExit Code: 1`);
+      }
+
+      return { success: false, reason: `${type} webhook not enabled` };
+    } catch (error) {
+      console.error('Error testing crash notification:', error);
+      return { success: false, reason: error.message };
+    }
+  }
+
+  /**
+   * Test alert notification (simulated)
+   */
+  async testAlertNotification(type = 'discord') {
+    try {
+      const settings = await this.getWebhookSettings();
+
+      if (!settings.notifyOnAlert) {
+        return { success: false, reason: 'Alert notifications are disabled' };
+      }
+
+      const title = '🟠 [TEST] Alert: Unstable Process - example-bot';
+      const description = 'Process **example-bot** has crashed **5 times** in the last **5 minutes** (threshold: 3).\n\n*This is a test notification.*';
+      const fields = [
+        { name: 'Process Name', value: 'example-bot', inline: true },
+        { name: 'PM2 ID', value: '0', inline: true },
+        { name: 'Severity', value: 'HIGH', inline: true },
+        { name: 'Crash Count', value: '5', inline: true },
+        { name: 'Time Window', value: '5 min', inline: true },
+        { name: 'Threshold', value: '3', inline: true },
+      ];
+
+      if (type === 'discord' && settings.discordEnabled) {
+        return await this.sendDiscordNotification(title, description, 0xf97316, fields);
+      } else if (type === 'slack' && settings.slackEnabled) {
+        return await this.sendSlackNotification(`${title}\n${description}`);
+      }
+
+      return { success: false, reason: `${type} webhook not enabled` };
+    } catch (error) {
+      console.error('Error testing alert notification:', error);
+      return { success: false, reason: error.message };
+    }
+  }
+
   /**
    * Get cleanup settings
    */

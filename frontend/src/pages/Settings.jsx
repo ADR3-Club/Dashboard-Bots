@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Save, TestTube2, Bell, Trash2, Users, Plus, Pencil, Trash, X } from 'lucide-react';
 import Layout from '../components/layout/Layout';
-import { useWebhookSettings, useUpdateWebhookSettings, useTestWebhook, useCleanupSettings, useUpdateCleanupSettings } from '../hooks/useSettings';
+import { useWebhookSettings, useUpdateWebhookSettings, useTestWebhook, useTestCrash, useTestAlert, useCleanupSettings, useUpdateCleanupSettings } from '../hooks/useSettings';
 import { useUsers, useCreateUser, useUpdateUser, useDeleteUser } from '../hooks/useUsers';
 import useLocaleStore from '../stores/localeStore';
 import useAuthStore from '../stores/authStore';
@@ -17,6 +17,8 @@ export default function Settings() {
   const updateMutation = useUpdateWebhookSettings();
   const updateCleanupMutation = useUpdateCleanupSettings();
   const testMutation = useTestWebhook();
+  const testCrashMutation = useTestCrash();
+  const testAlertMutation = useTestAlert();
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
@@ -89,6 +91,26 @@ export default function Settings() {
       toast.success(t('settings.webhooks.testSent'));
     } catch (error) {
       toast.error(t('settings.webhooks.testError'));
+    }
+  };
+
+  const handleTestCrash = async (type) => {
+    try {
+      await updateMutation.mutateAsync(formData);
+      await testCrashMutation.mutateAsync(type);
+      toast.success(t('settings.webhooks.testCrashSent'));
+    } catch (error) {
+      toast.error(t('settings.webhooks.testCrashError'));
+    }
+  };
+
+  const handleTestAlert = async (type) => {
+    try {
+      await updateMutation.mutateAsync(formData);
+      await testAlertMutation.mutateAsync(type);
+      toast.success(t('settings.webhooks.testAlertSent'));
+    } catch (error) {
+      toast.error(t('settings.webhooks.testAlertError'));
     }
   };
 
@@ -299,39 +321,59 @@ export default function Settings() {
                 {t('settings.webhooks.preferences')}
               </h3>
 
-              <label className="flex items-center space-x-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.notifyOnCrash}
-                  onChange={(e) => handleChange('notifyOnCrash', e.target.checked)}
-                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {t('settings.webhooks.notifyOnCrash')}
-                  </span>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {t('settings.webhooks.notifyOnCrashDesc')}
-                  </p>
-                </div>
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.notifyOnCrash}
+                    onChange={(e) => handleChange('notifyOnCrash', e.target.checked)}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      {t('settings.webhooks.notifyOnCrash')}
+                    </span>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      {t('settings.webhooks.notifyOnCrashDesc')}
+                    </p>
+                  </div>
+                </label>
+                <button
+                  onClick={() => handleTestCrash(formData.discordEnabled ? 'discord' : 'slack')}
+                  disabled={testCrashMutation.isPending || (!formData.discordEnabled && !formData.slackEnabled) || !formData.notifyOnCrash}
+                  className="btn btn-secondary text-xs px-3 py-1.5 flex items-center gap-1.5"
+                >
+                  <TestTube2 className="w-3.5 h-3.5" />
+                  {t('settings.webhooks.testCrash')}
+                </button>
+              </div>
 
-              <label className="flex items-center space-x-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.notifyOnAlert}
-                  onChange={(e) => handleChange('notifyOnAlert', e.target.checked)}
-                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {t('settings.webhooks.notifyOnAlert')}
-                  </span>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    {t('settings.webhooks.notifyOnAlertDesc')}
-                  </p>
-                </div>
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.notifyOnAlert}
+                    onChange={(e) => handleChange('notifyOnAlert', e.target.checked)}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      {t('settings.webhooks.notifyOnAlert')}
+                    </span>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      {t('settings.webhooks.notifyOnAlertDesc')}
+                    </p>
+                  </div>
+                </label>
+                <button
+                  onClick={() => handleTestAlert(formData.discordEnabled ? 'discord' : 'slack')}
+                  disabled={testAlertMutation.isPending || (!formData.discordEnabled && !formData.slackEnabled) || !formData.notifyOnAlert}
+                  className="btn btn-secondary text-xs px-3 py-1.5 flex items-center gap-1.5"
+                >
+                  <TestTube2 className="w-3.5 h-3.5" />
+                  {t('settings.webhooks.testAlert')}
+                </button>
+              </div>
             </div>
           </div>
 

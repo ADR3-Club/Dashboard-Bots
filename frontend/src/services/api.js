@@ -174,6 +174,12 @@ export const settingsAPI = {
   testWebhook: (type) =>
     api.post('/settings/webhooks/test', { type }),
 
+  testCrash: (type) =>
+    api.post('/settings/webhooks/test-crash', { type }),
+
+  testAlert: (type) =>
+    api.post('/settings/webhooks/test-alert', { type }),
+
   getCleanup: () =>
     api.get('/settings/cleanup'),
 

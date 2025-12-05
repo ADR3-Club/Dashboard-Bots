@@ -38,6 +38,24 @@ export function useTestWebhook() {
 }
 
 /**
+ * Hook to test crash notification
+ */
+export function useTestCrash() {
+  return useMutation({
+    mutationFn: (type) => settingsAPI.testCrash(type),
+  });
+}
+
+/**
+ * Hook to test alert notification
+ */
+export function useTestAlert() {
+  return useMutation({
+    mutationFn: (type) => settingsAPI.testAlert(type),
+  });
+}
+
+/**
  * Hook to get cleanup settings
  */
 export function useCleanupSettings() {

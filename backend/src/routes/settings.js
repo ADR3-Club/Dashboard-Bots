@@ -123,6 +123,80 @@ router.post('/webhooks/test', async (req, res) => {
 });
 
 /**
+ * POST /api/settings/webhooks/test-crash
+ * Test crash notification
+ */
+router.post('/webhooks/test-crash', async (req, res) => {
+  try {
+    const { type } = req.body; // 'discord' or 'slack'
+
+    if (!['discord', 'slack'].includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid webhook type. Must be "discord" or "slack"'
+      });
+    }
+
+    const result = await notificationService.testCrashNotification(type);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: `Crash notification test sent successfully`
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: `Failed to send crash test: ${result.reason}`
+      });
+    }
+  } catch (error) {
+    console.error('Error testing crash notification:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to test crash notification'
+    });
+  }
+});
+
+/**
+ * POST /api/settings/webhooks/test-alert
+ * Test alert notification
+ */
+router.post('/webhooks/test-alert', async (req, res) => {
+  try {
+    const { type } = req.body; // 'discord' or 'slack'
+
+    if (!['discord', 'slack'].includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid webhook type. Must be "discord" or "slack"'
+      });
+    }
+
+    const result = await notificationService.testAlertNotification(type);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: `Alert notification test sent successfully`
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: `Failed to send alert test: ${result.reason}`
+      });
+    }
+  } catch (error) {
+    console.error('Error testing alert notification:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to test alert notification'
+    });
+  }
+});
+
+/**
  * GET /api/settings/cleanup
  * Get history cleanup settings
  */
