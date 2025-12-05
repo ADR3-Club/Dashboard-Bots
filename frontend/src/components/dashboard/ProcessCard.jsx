@@ -1,19 +1,24 @@
-import { RefreshCw, FileText, Square, Play } from 'lucide-react';
+import { RefreshCw, FileText, Square, Play, TrendingUp } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import { formatUptime, formatMemory, formatCPU } from '../../utils/formatters';
 import { useRestartProcess, useStopProcess, useStartProcess } from '../../hooks/useProcesses';
 import { useState, memo } from 'react';
 import ConfirmDialog from '../common/ConfirmDialog';
+import MetricsModal from '../metrics/MetricsModal';
 import useLocaleStore from '../../stores/localeStore';
 import useAuthStore from '../../stores/authStore';
 import useToast from '../../hooks/useToast';
 
-function ProcessCard({ process, onViewLogs }) {
+function ProcessCard({ process, onViewLogs, selectedIds = [], onToggleSelect }) {
   const { t } = useLocaleStore();
   const { isAdmin } = useAuthStore();
   const toast = useToast();
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, action: null });
+  const [showMetrics, setShowMetrics] = useState(false);
+
+  const isSelected = selectedIds.includes(process.pm_id);
+  const showCheckbox = onToggleSelect !== undefined;
 
   const restartMutation = useRestartProcess();
   const stopMutation = useStopProcess();
@@ -79,6 +84,14 @@ function ProcessCard({ process, onViewLogs }) {
       <div className="card p-4 hover:shadow-lg transition-shadow">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
+          {showCheckbox && isAdmin() && (
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect(process.pm_id)}
+              className="w-5 h-5 mt-1 mr-3 flex-shrink-0 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 dark:focus:ring-primary-600 dark:bg-gray-700 dark:border-gray-600 cursor-pointer"
+            />
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
@@ -174,8 +187,24 @@ function ProcessCard({ process, onViewLogs }) {
           >
             <FileText className="w-4 h-4" />
           </button>
+
+          <button
+            onClick={() => setShowMetrics(true)}
+            className="btn btn-sm bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/40"
+            title={t('actions.viewMetrics')}
+          >
+            <TrendingUp className="w-4 h-4" />
+          </button>
         </div>
       </div>
+
+      {/* Metrics Modal */}
+      {showMetrics && (
+        <MetricsModal
+          process={process}
+          onClose={() => setShowMetrics(false)}
+        />
+      )}
 
       {/* Confirmation Dialog */}
       <ConfirmDialog

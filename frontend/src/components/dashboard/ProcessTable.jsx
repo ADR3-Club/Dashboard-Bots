@@ -200,6 +200,8 @@ function ProcessTable({ processes: filteredProcesses, isLoading: isLoadingProp, 
             key={process.pm_id}
             process={process}
             onViewLogs={onViewLogs}
+            selectedIds={selectedIds}
+            onToggleSelect={onToggleSelect}
           />
         ))}
       </div>
